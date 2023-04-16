@@ -1,4 +1,4 @@
-package com.example.movieappbackend;
+package com.example.movieappbackend.api.controller;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping("/services")
-public class MovieController {
+public class ServicesController {
 
 	@GetMapping
 	public Object listServices() throws IOException, InterruptedException {
