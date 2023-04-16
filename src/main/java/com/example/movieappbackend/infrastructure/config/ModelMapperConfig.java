@@ -1,4 +1,4 @@
-package com.example.movieappbackend.api.mapper;
+package com.example.movieappbackend.infrastructure.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

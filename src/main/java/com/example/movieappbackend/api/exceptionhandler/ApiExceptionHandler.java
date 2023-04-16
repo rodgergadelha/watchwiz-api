@@ -28,7 +28,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         ApiErrorType apiErrorType = ApiErrorType.ERRO_DE_SISTEMA;
-        String detail = MSG_ERRO_GENERICA_USUARIO_FINAL;
+        String detail = ex.getMessage();
 
         ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
 
