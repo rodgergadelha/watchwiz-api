@@ -11,19 +11,26 @@ import java.util.UUID;
 @Data
 @Entity
 public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
+    
+	private static final long serialVersionUID = 1L;
+    
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     @Column(nullable = false)
     private final String uuid = UUID.randomUUID().toString();
+    
     @Column(nullable = false, unique = true)
     private String username;
+    
     @Column(nullable = false, unique = true)
     private String email;
+    
     @Column(nullable = false)
     private Date birthdate;
+    
     @Column(nullable = false)
     private String password;
 }

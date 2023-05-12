@@ -9,15 +9,23 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Data
 @Entity
-public class CommentLike implements Serializable{
-    private static final long serialVersionUID = 1L;
-    @EqualsAndHashCode.Include
+public class CommentLike implements Serializable {
+    
+	private static final long serialVersionUID = 1L;
+    
+	@EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    
+	@Column(nullable = false)
     private final String uuid = UUID.randomUUID().toString();
-    @ManyToOne
+    
+	@ManyToOne
     @JoinColumn(name = "id_comment", nullable = false)
-    private Post post;
+    private PostComment comment;
+	
+	@ManyToOne
+    @JoinColumn(name = "id_user", nullable = false)
+    private User user;
 }

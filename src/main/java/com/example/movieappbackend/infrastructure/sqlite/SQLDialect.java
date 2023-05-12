@@ -32,7 +32,6 @@ public class SQLDialect extends Dialect {
 		registerColumnType(Types.BINARY, "blob");
 		registerColumnType(Types.VARBINARY, "blob");
 		registerColumnType(Types.LONGVARBINARY, "blob");
-		// registerColumnType(Types.NULL, "null");
 		registerColumnType(Types.BLOB, "blob");
 		registerColumnType(Types.CLOB, "clob");
 		registerColumnType(Types.BOOLEAN, "integer");
@@ -115,19 +114,6 @@ public class SQLDialect extends Dialect {
 
 	public boolean supportsOuterJoinForUpdate() {
 		return false;
-	}
-
-	public String getDropForeignKeyString() {
-		throw new UnsupportedOperationException("No drop foreign key syntax supported by SQLiteDialect");
-	}
-
-	public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKey, String referencedTable,
-			String[] primaryKey, boolean referencesPrimaryKey) {
-		throw new UnsupportedOperationException("No add foreign key syntax supported by SQLiteDialect");
-	}
-
-	public String getAddPrimaryKeyConstraintString(String constraintName) {
-		throw new UnsupportedOperationException("No add primary key syntax supported by SQLiteDialect");
 	}
 
 	public boolean supportsIfExistsBeforeTableName() {
