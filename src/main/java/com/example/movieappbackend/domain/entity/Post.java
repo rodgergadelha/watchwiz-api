@@ -3,7 +3,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -19,20 +23,21 @@ public class Post implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-	@Column(nullable = false)
-    private final String uuid = UUID.randomUUID().toString();
+	private final String uuid = UUID.randomUUID().toString();
     
-	@Column(columnDefinition = "TEXT", nullable = false)
+	@Lob
     private String text;
     
-	@Column(nullable = false)
     private Float rate;
     
-	@Column(name = "movie_imdb_id", nullable = false)
-    private String movieImdbId;
+	private String movieImdbId;
+	
+	@CreationTimestamp
+	@Column(columnDefinition = "datetime")
+	private OffsetDateTime creationDate;
 	
 	@ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_user")
     private User user;
     
 	@OneToMany(mappedBy = "post")

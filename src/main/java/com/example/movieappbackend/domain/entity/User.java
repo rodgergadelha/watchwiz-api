@@ -3,7 +3,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -19,18 +23,17 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false)
     private final String uuid = UUID.randomUUID().toString();
     
-    @Column(nullable = false, unique = true)
     private String username;
     
-    @Column(nullable = false, unique = true)
     private String email;
     
-    @Column(nullable = false)
     private Date birthdate;
     
-    @Column(nullable = false)
     private String password;
+    
+    @CreationTimestamp
+	@Column(columnDefinition = "datetime")
+	private OffsetDateTime registrationDate;
 }

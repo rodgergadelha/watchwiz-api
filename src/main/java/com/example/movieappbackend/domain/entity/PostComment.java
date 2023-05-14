@@ -19,7 +19,7 @@ public class PostComment extends Comment implements Serializable {
 	private static final long serialVersionUID = 1L;
     
 	@ManyToOne
-    @JoinColumn(name = "id_post", nullable = false)
+    @JoinColumn(name = "id_post")
     private Post post;
 	
 	@OneToMany(mappedBy = "postComment")

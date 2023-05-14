@@ -18,14 +18,13 @@ public class CommentLike implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-	@Column(nullable = false)
     private final String uuid = UUID.randomUUID().toString();
     
 	@ManyToOne
-    @JoinColumn(name = "id_comment", nullable = false)
+    @JoinColumn(name = "id_comment")
     private PostComment comment;
 	
 	@ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_user")
     private User user;
 }

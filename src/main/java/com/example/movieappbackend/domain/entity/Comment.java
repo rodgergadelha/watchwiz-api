@@ -1,5 +1,6 @@
 package com.example.movieappbackend.domain.entity;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -7,8 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,13 +27,16 @@ public abstract class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-	@Column(nullable = false)
     private final String uuid = UUID.randomUUID().toString();
 	
-	@Column(columnDefinition = "TEXT", nullable = false)
+	@Lob
     private String text;
     
 	@ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_user")
     private User user;
+	
+	@CreationTimestamp
+    @Column(columnDefinition = "datetime")
+    private OffsetDateTime creationDate;
 }
