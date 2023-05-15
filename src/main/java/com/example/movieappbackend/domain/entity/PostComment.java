@@ -21,7 +21,4 @@ public class PostComment extends Comment implements Serializable {
 	@ManyToOne
     @JoinColumn(name = "id_post")
     private Post post;
-	
-	@OneToMany(mappedBy = "postComment")
-    private Collection<ResponseComment> responseComments;
 }

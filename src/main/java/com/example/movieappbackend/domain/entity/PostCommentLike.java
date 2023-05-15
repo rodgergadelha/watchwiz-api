@@ -9,7 +9,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Data
 @Entity
-public class CommentLike implements Serializable {
+public class PostCommentLike implements Serializable {
     
 	private static final long serialVersionUID = 1L;
     
@@ -21,8 +21,8 @@ public class CommentLike implements Serializable {
     private final String uuid = UUID.randomUUID().toString();
     
 	@ManyToOne
-    @JoinColumn(name = "id_comment")
-    private PostComment comment;
+    @JoinColumn(name = "id_post_comment")
+    private PostComment postComment;
 	
 	@ManyToOne
     @JoinColumn(name = "id_user")

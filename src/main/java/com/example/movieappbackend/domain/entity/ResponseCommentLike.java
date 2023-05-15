@@ -3,18 +3,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.io.Serializable;
-import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.UUID;
 
 @EqualsAndHashCode
 @Data
 @Entity
-public class Post implements Serializable {
+public class ResponseCommentLike implements Serializable {
     
 	private static final long serialVersionUID = 1L;
     
@@ -23,18 +18,11 @@ public class Post implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-	private final String uuid = UUID.randomUUID().toString();
+    private final String uuid = UUID.randomUUID().toString();
     
-	@Lob
-    private String text;
-    
-    private Float rate;
-    
-	private String movieImdbId;
-	
-	@CreationTimestamp
-	@Column(columnDefinition = "datetime")
-	private OffsetDateTime creationDate;
+	@ManyToOne
+    @JoinColumn(name = "id_response_comment")
+    private ResponseComment responseComment;
 	
 	@ManyToOne
     @JoinColumn(name = "id_user")
