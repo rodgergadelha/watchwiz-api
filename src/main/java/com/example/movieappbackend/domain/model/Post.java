@@ -1,4 +1,4 @@
-package com.example.movieappbackend.domain.entity;
+package com.example.movieappbackend.domain.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -24,6 +24,8 @@ public class Post implements Serializable {
     private Long id;
     
 	private final String uuid = UUID.randomUUID().toString();
+	
+	private String url;
     
 	@Lob
     private String text;
@@ -36,7 +38,7 @@ public class Post implements Serializable {
 	@Column(columnDefinition = "datetime")
 	private OffsetDateTime creationDate;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user")
     private User user;
 }

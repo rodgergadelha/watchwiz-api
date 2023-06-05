@@ -1,4 +1,4 @@
-package com.example.movieappbackend.domain.entity;
+package com.example.movieappbackend.domain.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -29,9 +29,11 @@ public class User implements Serializable {
     
     private String email;
     
-    private Date birthdate;
+    private OffsetDateTime birthdate;
     
     private String password;
+    
+    private boolean enabled;
     
     @CreationTimestamp
 	@Column(columnDefinition = "datetime")

@@ -3,30 +3,30 @@ package com.example.movieappbackend.domain.service;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.movieappbackend.api.dtos.dto.PostCommentDto;
 import com.example.movieappbackend.api.dtos.form.PostCommentForm;
 import com.example.movieappbackend.api.mapper.PostCommentMapper;
-import com.example.movieappbackend.domain.entity.Post;
-import com.example.movieappbackend.domain.entity.PostComment;
-import com.example.movieappbackend.domain.entity.User;
 import com.example.movieappbackend.domain.exception.EntityInUseException;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
+import com.example.movieappbackend.domain.model.Post;
+import com.example.movieappbackend.domain.model.PostComment;
+import com.example.movieappbackend.domain.model.User;
 import com.example.movieappbackend.domain.repository.PostCommentRepository;
+import com.example.movieappbackend.domain.repository.UserRepository;
+
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class PostCommentService {
 
 	private final PostCommentRepository repository;
 	
 	private final PostCommentMapper mapper;
-	
-	public PostCommentService(PostCommentRepository repository, PostCommentMapper mapper) {
-		this.repository = repository;
-		this.mapper = mapper;
-	}
 	
 	public Page<PostCommentDto> findAllByPost(String postUuid, Pageable pageable) {
 		Post post = null;
@@ -34,9 +34,11 @@ public class PostCommentService {
 				.map((postComment) -> mapper.entityToDto(postComment));
 	}
 	
-	public PostCommentDto findAndValidateByUuid(String uuid) {
-		PostComment postComment = repository.findByUuid(uuid)
-				.orElseThrow(() -> new EntityNotFoundException());
+	public PostCommentDto findAndValidateByUuid(String postCommentUuid) {
+		PostComment postComment = repository.findByUuid(postCommentUuid)
+				.orElseThrow(() -> new EntityNotFoundException(
+						String.format("Cannot find post comment with uuid: %s", postCommentUuid)
+				));
 		return mapper.entityToDto(postComment);
 	}
 	
@@ -66,16 +68,4 @@ public class PostCommentService {
 			throw new EntityInUseException(e.getMessage());
 		}
 	}
-	
-	/*
-	public int getLikesFromPostComment(String postCommentUuid) {
-		PostComment postComment = null;
-		return repository.getTotalLikesFromPostComment(postComment);
-	}
-	
-	public List<ResponseCommentDto> getResponseComments(String postCommentUuid) {
-		PostComment postComment = null;
-		return repository.
-	}
-	*/
 }

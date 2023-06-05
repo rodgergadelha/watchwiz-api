@@ -1,0 +1,70 @@
+package com.example.movieappbackend.domain.service;
+
+import java.util.UUID;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.example.movieappbackend.api.dtos.form.RegisterForm;
+import com.example.movieappbackend.api.mapper.UserMapper;
+import com.example.movieappbackend.domain.exception.BusinessException;
+import com.example.movieappbackend.domain.exception.EntityNotFoundException;
+import com.example.movieappbackend.domain.model.NotificationEmail;
+import com.example.movieappbackend.domain.model.User;
+import com.example.movieappbackend.domain.model.VerificationToken;
+import com.example.movieappbackend.domain.repository.UserRepository;
+import com.example.movieappbackend.domain.repository.VerificationTokenRepository;
+
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
+public class AuthService {
+
+	private final PasswordEncoder passwordEncoder;
+	
+	private final UserRepository userRepository;
+	
+	private final VerificationTokenRepository verificationTokenRepository;
+	
+	private final MailService mailService;
+	
+	private final UserMapper userMapper;
+
+	@Transactional
+	public void signup(RegisterForm form) {
+		User user = userMapper.formToEntity(form);
+		user.setPassword(passwordEncoder.encode(form.getPassword()));
+		user = userRepository.save(user);
+		String token = generateVerificationToken(user);
+		
+		mailService.sendMail(new NotificationEmail(
+				"Please activate your account!",
+				user.getEmail(),
+				"Thank you for signing up to WatchWiz, click on the below url to activate your account:\n"
+				+ "http://localhost:8080/auth/account-verification/" + token
+		));
+	}
+	
+	@Transactional
+	public void verifyAccount(String token) {
+		VerificationToken verificationToken = verificationTokenRepository.findByToken(token).orElseThrow(
+			() -> new EntityNotFoundException("Invalid token.")
+		);
+		User user = verificationToken.getUser();
+		if(user.isEnabled()) throw new BusinessException("User already enabled.");
+		user.setEnabled(true);
+	}
+	
+	@Transactional
+	private String generateVerificationToken(User user) {
+		String token = UUID.randomUUID().toString();
+		VerificationToken verificationToken = new VerificationToken();
+		verificationToken.setUser(user);
+		verificationToken.setToken(token);
+		verificationTokenRepository.save(verificationToken);
+		return token;
+	}
+}

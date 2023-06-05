@@ -1,10 +1,17 @@
 package com.example.movieappbackend.api.exceptionhandler;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -13,21 +20,27 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.exception.EntityInUseException;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.PropertyBindingException;
+
+import lombok.AllArgsConstructor;
 
 @ControllerAdvice
+@AllArgsConstructor
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-	public static final String MSG_ERRO_GENERICA_USUARIO_FINAL =
-            "Ocorreu um erro interno inesperado no sistema. " +
-            "Tente novamente e se o problema persistir, entre em contato " +
-            "com o administrador do sistema.";
+	public static final String GENERIC_ERROR_MESSAGE = "An unexpected internal system "
+			+ "error has occurred. Try again and if the problem persists, contact us with your "
+			+ "system administrator.";
+	
+    private final MessageSource messageSource;
 	
 	@ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(
             Exception ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        ApiErrorType apiErrorType = ApiErrorType.ERRO_DE_SISTEMA;
+        ApiErrorType apiErrorType = ApiErrorType.SYSTEM_ERROR;
         String detail = ex.getMessage();
 
         ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
@@ -40,7 +53,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     		EntityNotFoundException ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.NOT_FOUND;
-        ApiErrorType apiErrorType = ApiErrorType.RECURSO_NAO_ENCONTRADO;
+        ApiErrorType apiErrorType = ApiErrorType.RESOURCE_NOT_FOUND;
         String detail = ex.getMessage();
 
         ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
@@ -53,7 +66,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     		EntityInUseException ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.CONFLICT;
-        ApiErrorType apiErrorType = ApiErrorType.ENTIDADE_EM_USO;
+        ApiErrorType apiErrorType = ApiErrorType.ENTITY_IN_USE;
         String detail = ex.getMessage();
 
         ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
@@ -66,7 +79,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     		BusinessException ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        ApiErrorType apiErrorType = ApiErrorType.ERRO_DE_NGOCIO;
+        ApiErrorType apiErrorType = ApiErrorType.BUSINESS_ERROR;
         String detail = ex.getMessage();
 
         ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
@@ -74,6 +87,91 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
     }
 	
+	 @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+        return handleValidationType(ex, ex.getBindingResult(), headers, status, request);
+    }
+
+    public ResponseEntity<Object> handleValidationType(
+            Exception ex,
+            BindingResult bindingResult,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+        ApiErrorType problemType = ApiErrorType.INVALID_DATA;
+        String detail = "One or more fields are invalid.";
+
+        List<ApiError.Object> problemObjects = bindingResult.getAllErrors()
+                .stream().map(objectError -> {
+                    String message = messageSource.getMessage(objectError,
+                            LocaleContextHolder.getLocale());
+
+                    String name = objectError.getObjectName();
+
+                    if(objectError instanceof FieldError) {
+                        name = ((FieldError) objectError).getField();
+                    }
+
+                    return ApiError.Object.builder()
+                            .name(name)
+                            .userMessage(message)
+                            .build();
+                }).collect(Collectors.toList());
+
+        ApiError apiError = createApiErrorBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .objects(problemObjects)
+                .build();
+
+        return handleExceptionInternal(ex, apiError, headers, status, request);
+    }
+    
+    private ResponseEntity<Object> handlePropertyBinding(
+            PropertyBindingException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+        String path = ex.getPath().stream()
+                .map(ref -> ref.getFieldName())
+                .collect(Collectors.joining("."));
+
+
+        ApiErrorType apiErrorType = ApiErrorType.INCOMPREHENSIBLE_MESSAGE;
+        String detail = String.format("The property '%s' does not exist.", path);
+        ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
+
+        return handleExceptionInternal(ex, apiError, headers, status, request);
+    }
+
+    private ResponseEntity<Object> handleInvalidFormat(
+            InvalidFormatException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+        String path = ex.getPath().stream()
+                .map(ref -> ref.getFieldName())
+                .collect(Collectors.joining("."));
+
+        ApiErrorType apiErrorType = ApiErrorType.INCOMPREHENSIBLE_MESSAGE;
+        String detail = String.format(
+                "The property '%s' received the value '%s'," +
+                        " that is an invalid type. Correct and enter a compatible value.",
+                path, ex.getValue(), ex.getTargetType().getSimpleName()
+        );
+
+        ApiError problem = createApiErrorBuilder(status, apiErrorType, detail).build();
+
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
 	protected ResponseEntity<Object> handleExceptionInternal(
 			Exception ex,
 			Object body,
@@ -87,14 +185,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     .timestamp(OffsetDateTime.now())
                     .title(status.getReasonPhrase())
                     .status(status.value())
-                    .userMessage(MSG_ERRO_GENERICA_USUARIO_FINAL)
+                    .userMessage(GENERIC_ERROR_MESSAGE)
                     .build();
         } else if(body instanceof String) {
             body = ApiError.builder()
                     .timestamp(OffsetDateTime.now())
                     .title((String) body)
                     .status(status.value())
-                    .userMessage(MSG_ERRO_GENERICA_USUARIO_FINAL)
+                    .userMessage(GENERIC_ERROR_MESSAGE)
                     .build();
         }
 
@@ -111,7 +209,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .type(apiErrorType.getUri())
                 .title(apiErrorType.getTitle())
                 .timestamp(OffsetDateTime.now())
-                .userMessage(MSG_ERRO_GENERICA_USUARIO_FINAL)
+                .userMessage(GENERIC_ERROR_MESSAGE)
                 .detail(detail);
     }
 }

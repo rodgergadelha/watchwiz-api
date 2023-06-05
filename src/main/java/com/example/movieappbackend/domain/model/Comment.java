@@ -1,9 +1,10 @@
-package com.example.movieappbackend.domain.entity;
+package com.example.movieappbackend.domain.model;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +33,7 @@ public abstract class Comment {
 	@Lob
     private String text;
     
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user")
     private User user;
 	

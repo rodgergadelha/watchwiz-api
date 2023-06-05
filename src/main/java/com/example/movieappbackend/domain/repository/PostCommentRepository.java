@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.movieappbackend.domain.entity.Post;
-import com.example.movieappbackend.domain.entity.PostComment;
+import com.example.movieappbackend.domain.model.Post;
+import com.example.movieappbackend.domain.model.PostComment;
 
 @Repository
 public interface PostCommentRepository extends JpaRepository<PostComment, Long>{
@@ -21,6 +21,6 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long>{
 	
 	Page<PostComment> findAllByPost(Post post, Pageable pageable);
 	
-	@Query("select count(*) from PostLike where postComment = :postComment")
+	@Query("select count(*) from PostCommentLike where postComment = :postComment")
 	int getTotalLikesFromPostComment(@Param("postComment") PostComment postComment);
 }

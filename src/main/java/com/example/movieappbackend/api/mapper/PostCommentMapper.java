@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.movieappbackend.api.dtos.dto.PostCommentDto;
 import com.example.movieappbackend.api.dtos.form.PostCommentForm;
-import com.example.movieappbackend.domain.entity.PostComment;
+import com.example.movieappbackend.domain.model.PostComment;
 
 @Component
 public class PostCommentMapper {
