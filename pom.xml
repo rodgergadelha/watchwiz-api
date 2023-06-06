@@ -96,6 +96,11 @@
 			<artifactId>oauth2-oidc-sdk</artifactId>
 			<version>${oauth2-oidc-sdk.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId> 
+			<artifactId>springfox-boot-starter</artifactId>
+		 	<version>3.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
