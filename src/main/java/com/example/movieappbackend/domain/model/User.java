@@ -29,7 +29,7 @@ public class User implements Serializable {
     
     private String email;
     
-    private OffsetDateTime birthdate;
+    private Date birthdate;
     
     private String password;
     

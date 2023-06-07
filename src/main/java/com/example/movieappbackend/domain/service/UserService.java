@@ -8,11 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.movieappbackend.api.dtos.dto.UserDto;
+import com.example.movieappbackend.api.dtos.form.RegisterForm;
 import com.example.movieappbackend.api.mapper.UserMapper;
+import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.exception.EntityInUseException;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
 import com.example.movieappbackend.domain.model.User;
 import com.example.movieappbackend.domain.repository.UserRepository;
+import com.example.movieappbackend.domain.repository.VerificationTokenRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -21,6 +24,8 @@ import lombok.AllArgsConstructor;
 public class UserService {
 
 	private final UserRepository repository;
+	
+	private final VerificationTokenRepository verificationTokenRepository;
 	
 	private final UserMapper mapper;
 	
@@ -46,9 +51,19 @@ public class UserService {
 	}
 	
 	@Transactional
+	public User save(RegisterForm form) {
+		if(repository.existsByUsername(form.getUsername())) {
+			throw new BusinessException(String.format("Username: %s already exists", form.getUsername()));
+		}
+		User user = mapper.formToEntity(form);
+		return repository.save(user);
+	}
+	
+	@Transactional
 	public void remove(String username) {
 		User user = findByUsername(username);
 		try {
+			verificationTokenRepository.deleteByUser(user);
 			repository.delete(user);
 			repository.flush();
 		} catch (DataIntegrityViolationException e) {

@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	@Query("select w.id.user from Watched w where w.id.movieImdbId = :movie")
 	List<User> findAllByWatchedMovie(@Param("movie") String movieImdbId);
+	
+	boolean existsByUsername(String username);
 }
