@@ -24,6 +24,8 @@ public class UserMoviePair implements Serializable {
 	@EqualsAndHashCode.Include
 	private User user;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_movie_list_item")
 	@EqualsAndHashCode.Include
-	private String movieImdbId;
+	private MovieListItem movie;
 }

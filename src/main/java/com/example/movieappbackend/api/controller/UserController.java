@@ -7,14 +7,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.movieappbackend.api.dtos.dto.MovieDto;
 import com.example.movieappbackend.api.dtos.dto.UserDto;
-import com.example.movieappbackend.domain.model.User;
-import com.example.movieappbackend.domain.service.AuthService;
+import com.example.movieappbackend.domain.model.MovieListItem;
 import com.example.movieappbackend.domain.service.UserService;
-import com.example.movieappbackend.domain.service.WatchedService;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -51,7 +52,13 @@ public class UserController {
 	}
 	
 	@GetMapping("/my-account/watched-movies")
-	public ResponseEntity<List<String>> watchedMovies() {
+	public ResponseEntity<List<MovieListItem>> watchedMovies() {
 		return ResponseEntity.ok(service.watchedMovies());
+	}
+	
+	@PostMapping("/my-account/watched-movies")
+	public ResponseEntity<?> saveWatchedMovie(@RequestBody MovieListItem movie) {
+		service.saveWatchedMovie(movie);
+		return ResponseEntity.ok().build();
 	}
 }

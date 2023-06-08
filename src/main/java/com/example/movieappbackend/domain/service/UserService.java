@@ -4,15 +4,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.movieappbackend.api.dtos.dto.MovieDto;
 import com.example.movieappbackend.api.dtos.dto.UserDto;
 import com.example.movieappbackend.api.dtos.form.RegisterForm;
+import com.example.movieappbackend.api.mapper.MovieMapper;
 import com.example.movieappbackend.api.mapper.UserMapper;
 import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.exception.EntityInUseException;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
+import com.example.movieappbackend.domain.model.MovieListItem;
 import com.example.movieappbackend.domain.model.User;
 import com.example.movieappbackend.domain.repository.UserRepository;
 import com.example.movieappbackend.domain.repository.VerificationTokenRepository;
@@ -29,18 +39,9 @@ public class UserService {
 	
 	private final UserMapper mapper;
 	
-	private final WatchedService watchedService;
-	
-	private final AuthService authService;
-	
 	public List<UserDto> findAllUsers() {
 		return repository.findAll().stream().map(user -> mapper.entityToDto(user))
 				.collect(Collectors.toList());
-	}
-	
-	public List<UserDto> findAllUsersByWatchedMovie(String movieImdbId) {
-		return repository.findAllByWatchedMovie(movieImdbId).stream()
-				.map(user -> mapper.entityToDto(user)).collect(Collectors.toList());
 	}	
 	
 	public UserDto findUserDtoByUsername(String username) {
@@ -80,14 +81,25 @@ public class UserService {
 		remove(user);
 	}
 	
-	@Transactional
-	public void removeAuthenticatedUser() {
-		User user = authService.getAuthenticatedUser();
-		remove(user);
+	public User getAuthenticatedUser() {
+		BearerTokenAuthentication authentication = (BearerTokenAuthentication) SecurityContextHolder.getContext().getAuthentication();
+		String username = (String) authentication.getTokenAttributes().get("user_name");
+		User user = findByUsername(username);
+		return user;
 	}
 	
-	public List<String> watchedMovies() {
-		User user = authService.getAuthenticatedUser();
-		return watchedService.findUserWatchedMovies(user);
+	@Transactional
+	public void removeAuthenticatedUser() {
+		remove(getAuthenticatedUser());
+	}
+	
+	public List<MovieListItem> watchedMovies() {
+		return getAuthenticatedUser().getWatched();
+	}
+	
+	@Transactional
+	public void saveWatchedMovie(MovieListItem movie) {
+		User user = getAuthenticatedUser();
+		user.getWatched().add(movie);
 	}
 }

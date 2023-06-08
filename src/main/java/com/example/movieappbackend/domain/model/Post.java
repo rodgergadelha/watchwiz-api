@@ -27,7 +27,7 @@ public class Post implements Serializable {
 	
 	private String url;
     
-	@Lob
+	@Column(columnDefinition = "TEXT")
     private String text;
     
     private Float rate;
@@ -35,7 +35,7 @@ public class Post implements Serializable {
 	private String movieImdbId;
 	
 	@CreationTimestamp
-	@Column(columnDefinition = "datetime")
+	@Column(columnDefinition = "timestamp")
 	private OffsetDateTime creationDate;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

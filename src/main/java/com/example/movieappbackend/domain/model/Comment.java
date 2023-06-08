@@ -30,7 +30,7 @@ public abstract class Comment {
     
     private final String uuid = UUID.randomUUID().toString();
 	
-	@Lob
+    @Column(columnDefinition = "TEXT")
     private String text;
     
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -38,6 +38,6 @@ public abstract class Comment {
     private User user;
 	
 	@CreationTimestamp
-    @Column(columnDefinition = "datetime")
+	@Column(columnDefinition = "timestamp")
     private OffsetDateTime creationDate;
 }

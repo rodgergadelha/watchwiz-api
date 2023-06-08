@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @EqualsAndHashCode
@@ -29,6 +30,7 @@ public class User implements Serializable {
     
     private String email;
     
+    @Column(columnDefinition = "date")
     private Date birthdate;
     
     private String password;
@@ -36,6 +38,24 @@ public class User implements Serializable {
     private boolean enabled;
     
     @CreationTimestamp
-	@Column(columnDefinition = "datetime")
+	@Column(columnDefinition = "timestamp")
 	private OffsetDateTime registrationDate;
+    
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "watched",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
+    private List<MovieListItem> watched;
+    
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "liked",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
+    private List<MovieListItem> liked;
+    
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "watch_later",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
+    private List<MovieListItem> watchLater;
 }
