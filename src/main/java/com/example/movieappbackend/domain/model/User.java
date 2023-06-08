@@ -37,23 +37,25 @@ public class User implements Serializable {
     
     private boolean enabled;
     
+    private String profileImagePath;
+    
     @CreationTimestamp
 	@Column(columnDefinition = "timestamp")
 	private OffsetDateTime registrationDate;
     
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(name = "watched",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
     private List<MovieListItem> watched;
     
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(name = "liked",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
     private List<MovieListItem> liked;
     
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(name = "watch_later",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))

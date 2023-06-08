@@ -2,18 +2,24 @@ package com.example.movieappbackend.api.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.movieappbackend.api.dtos.dto.MovieDto;
 import com.example.movieappbackend.api.dtos.dto.UserDto;
+import com.example.movieappbackend.api.dtos.form.RegisterForm;
 import com.example.movieappbackend.domain.model.MovieListItem;
 import com.example.movieappbackend.domain.service.UserService;
 
@@ -51,14 +57,18 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@GetMapping("/my-account/watched-movies")
-	public ResponseEntity<List<MovieListItem>> watchedMovies() {
-		return ResponseEntity.ok(service.watchedMovies());
+	@PutMapping("/my-account")
+	public ResponseEntity<UserDto> updateAuthenticatedUser(@RequestBody @Valid RegisterForm form) {
+		UserDto userDto = service.updateAuthenticatedUser(form);
+		return ResponseEntity.ok(userDto);
 	}
 	
-	@PostMapping("/my-account/watched-movies")
-	public ResponseEntity<?> saveWatchedMovie(@RequestBody MovieListItem movie) {
-		service.saveWatchedMovie(movie);
-		return ResponseEntity.ok().build();
+	@GetMapping("/my-account/email-update/{token}")
+	public ResponseEntity<String> updateAuthenticatedUserEmail(
+			@PathVariable String token,
+			@RequestParam("email") String email) {
+		
+		service.verifyTokenAndUpdateUserEmail(token, email);
+		return ResponseEntity.ok("Email updated successfully!");
 	}
 }

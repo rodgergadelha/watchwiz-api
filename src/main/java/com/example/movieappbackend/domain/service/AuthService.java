@@ -1,18 +1,14 @@
 package com.example.movieappbackend.domain.service;
 
-import java.util.UUID;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.movieappbackend.api.dtos.form.RegisterForm;
 import com.example.movieappbackend.domain.exception.BusinessException;
-import com.example.movieappbackend.domain.exception.EntityNotFoundException;
 import com.example.movieappbackend.domain.model.NotificationEmail;
 import com.example.movieappbackend.domain.model.User;
 import com.example.movieappbackend.domain.model.VerificationToken;
-import com.example.movieappbackend.domain.repository.VerificationTokenRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -24,7 +20,7 @@ public class AuthService {
 	
 	private final UserService userService;
 	
-	private final VerificationTokenRepository verificationTokenRepository;
+	private final VerificationTokenService verificationTokenService;
 	
 	private final MailService mailService;
 
@@ -32,33 +28,19 @@ public class AuthService {
 	public void signup(RegisterForm form) {
 		form.setPassword(passwordEncoder.encode(form.getPassword()));
 		User user = userService.save(form);
-		String token = generateVerificationToken(user);
-		
+		String token = verificationTokenService.generateVerificationToken(user);
+		String emailBody = String.format("Thank you for signing up to WatchWiz, click on the below url to activate your account:\n"
+				+ "http://localhost:8080/auth/account-verification/%s", token);
 		mailService.sendMail(new NotificationEmail(
-				"Please activate your account!",
-				user.getEmail(),
-				"Thank you for signing up to WatchWiz, click on the below url to activate your account:\n"
-				+ "http://localhost:8080/auth/account-verification/" + token
+				"Please activate your account!", user.getEmail(), emailBody
 		));
 	}
 	
 	@Transactional
 	public void verifyAccount(String token) {
-		VerificationToken verificationToken = verificationTokenRepository.findByToken(token).orElseThrow(
-			() -> new EntityNotFoundException("Invalid token.")
-		);
+		VerificationToken verificationToken = verificationTokenService.findByToken(token);
 		User user = verificationToken.getUser();
-		if(user.isEnabled()) throw new BusinessException("User already enabled.");
 		user.setEnabled(true);
-	}
-	
-	@Transactional
-	private String generateVerificationToken(User user) {
-		String token = UUID.randomUUID().toString();
-		VerificationToken verificationToken = new VerificationToken();
-		verificationToken.setUser(user);
-		verificationToken.setToken(token);
-		verificationTokenRepository.save(verificationToken);
-		return token;
+		verificationTokenService.remove(verificationToken);
 	}
 }

@@ -28,7 +28,7 @@ public class VerificationToken implements Serializable {
     
     private String token;
     
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.EAGER)
     private User user;
     
     private OffsetDateTime expiryDate;

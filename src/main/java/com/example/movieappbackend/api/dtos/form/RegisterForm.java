@@ -32,4 +32,6 @@ public class RegisterForm {
 	@Past
 	@NotNull
 	private Date birthdate;
+	
+	private String profileImagePath;
 }
