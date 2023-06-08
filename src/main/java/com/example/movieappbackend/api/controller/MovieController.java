@@ -1,5 +1,6 @@
 package com.example.movieappbackend.api.controller;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,21 +16,36 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.movieappbackend.api.dtos.dto.MovieDto;
+import com.example.movieappbackend.api.mapper.MovieMapper;
+import com.nimbusds.jose.util.JSONObjectUtils;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import lombok.AllArgsConstructor;
+import net.minidev.json.JSONObject;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/movies")
+@AllArgsConstructor
 public class MovieController {
 
-private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 	
-	public MovieController(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+	private final MovieMapper mapper;
 	
 	@GetMapping("/get")
-	public Object findMovie(
-			@RequestParam("country") String country,
-			@RequestParam("imdb_id") String imdbId) {
+	@ApiImplicitParams({
+		   @ApiImplicitParam(name = "country", paramType = "query", dataType = "String",
+				   required = true, value = ApiDocumentationUtils.COUNTRY_PARAM_DESCRIPTION),
+		   
+		   @ApiImplicitParam(name = "imdb_id", paramType = "query", dataType = "String",
+		   required = true)
+	})
+	public MovieDto findMovie(
+			@RequestParam(value = "country") String country,
+			@RequestParam(value = "imdb_id") String imdbId) throws ParseException {
 		
 		String url = String.format("%s/get/basic", XRapidAPIUtils.getBaseURL());
 		HttpHeaders headers = XRapidAPIUtils.getBasicHttpHeaders();
@@ -45,6 +61,8 @@ private final RestTemplate restTemplate;
 		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(params, headers);
 		ResponseEntity<?> response = this.restTemplate.exchange(urlTemplate,
 				HttpMethod.GET, entity, String.class, params);
-		return response.getBody();
+		Map<String, Object> responseBody = JSONObjectUtils.parse((String) response.getBody());
+		
+		return mapper.dto(responseBody.get("result"));
 	}
 }

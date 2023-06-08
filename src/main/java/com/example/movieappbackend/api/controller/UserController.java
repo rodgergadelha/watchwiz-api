@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.movieappbackend.api.dtos.dto.UserDto;
+import com.example.movieappbackend.domain.model.User;
+import com.example.movieappbackend.domain.service.AuthService;
 import com.example.movieappbackend.domain.service.UserService;
 import com.example.movieappbackend.domain.service.WatchedService;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import lombok.AllArgsConstructor;
 
 @CrossOrigin
@@ -24,29 +28,30 @@ public class UserController {
 
 	private final UserService service;
 	
-	private final WatchedService watchedService;
-	
 	@GetMapping
 	public ResponseEntity<List<UserDto>> findAllUsers() {
 		List<UserDto> userDtos = service.findAllUsers();
 		return ResponseEntity.ok(userDtos);
 	}
 	
-	@GetMapping("/{username}/watched-movies")
-	public ResponseEntity<List<String>> findUserWatchedMovies(@PathVariable String username) {
-		List<String> watchedMovies = watchedService.findUserWatchedMovies(username);
-		return ResponseEntity.ok(watchedMovies);
-	}
-	
 	@GetMapping("/{username}")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "username", paramType = "path", dataType = "String",
+				   required = true),
+	})
 	public ResponseEntity<UserDto> findByUsername(@PathVariable String username) {
 		UserDto userDto = service.findUserDtoByUsername(username);
 		return ResponseEntity.ok(userDto);
 	}
 	
-	@DeleteMapping("/{username}")
-	public ResponseEntity<?> removeByUsername(@PathVariable String username) {
-		service.remove(username);
+	@DeleteMapping("/my-account")
+	public ResponseEntity<?> deleteAuthenticatedUser() {
+		service.removeAuthenticatedUser();
 		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/my-account/watched-movies")
+	public ResponseEntity<List<String>> watchedMovies() {
+		return ResponseEntity.ok(service.watchedMovies());
 	}
 }

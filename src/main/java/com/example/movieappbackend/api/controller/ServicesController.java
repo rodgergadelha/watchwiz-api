@@ -1,5 +1,8 @@
 package com.example.movieappbackend.api.controller;
 
+import java.text.ParseException;
+import java.util.Map;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import com.nimbusds.jose.util.JSONObjectUtils;
 
 @CrossOrigin
 @RestController
@@ -22,14 +27,14 @@ public class ServicesController {
 	}
 
 	@GetMapping
-	public Object listServices()  {
+	public Map<String, Object> listServices() throws ParseException  {
 		
 		String url = String.format("%s/services", XRapidAPIUtils.getBaseURL());
 		HttpHeaders headers = XRapidAPIUtils.getBasicHttpHeaders();
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		ResponseEntity<?> response = this.restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-		
-		return response.getBody();
+		Map<String, Object> responseBody = JSONObjectUtils.parse((String) response.getBody());
+		return (Map<String, Object>) responseBody.get("result");
 	}
 	
 	

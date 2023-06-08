@@ -16,10 +16,7 @@ public class WatchedService {
 
 	private final WatchedRepository repository;
 	
-	private final UserService userService;
-	
-	public List<String> findUserWatchedMovies(String username) {
-		User user = userService.findByUsername(username);
+	public List<String> findUserWatchedMovies(User user) {
 		return repository.findAllByUser(user).stream()
 				.map(userMoviePair -> userMoviePair.getMovieImdbId())
 				.collect(Collectors.toList());

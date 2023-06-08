@@ -1,5 +1,7 @@
 package com.example.movieappbackend.api.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.movieappbackend.api.dtos.form.RegisterForm;
 import com.example.movieappbackend.domain.service.AuthService;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import lombok.AllArgsConstructor;
 
 @CrossOrigin
@@ -31,6 +35,10 @@ public class AuthController {
 	}
 	
 	@GetMapping("/account-verification/{token}")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "token", paramType = "path", dataType = "String",
+				   required = true, value = "Verification token")
+	})
 	public ResponseEntity<String> verifyAccount(@PathVariable String token) {
 		service.verifyAccount(token);
 		return ResponseEntity.ok("Account activated successfully.");

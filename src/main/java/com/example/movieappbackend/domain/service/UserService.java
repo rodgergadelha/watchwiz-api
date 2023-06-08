@@ -29,6 +29,10 @@ public class UserService {
 	
 	private final UserMapper mapper;
 	
+	private final WatchedService watchedService;
+	
+	private final AuthService authService;
+	
 	public List<UserDto> findAllUsers() {
 		return repository.findAll().stream().map(user -> mapper.entityToDto(user))
 				.collect(Collectors.toList());
@@ -60,8 +64,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public void remove(String username) {
-		User user = findByUsername(username);
+	public void remove(User user) {
 		try {
 			verificationTokenRepository.deleteByUser(user);
 			repository.delete(user);
@@ -69,5 +72,22 @@ public class UserService {
 		} catch (DataIntegrityViolationException e) {
 			throw new EntityInUseException(e.getMessage());
 		}
+	}
+	
+	@Transactional
+	public void remove(String username) {
+		User user = findByUsername(username);
+		remove(user);
+	}
+	
+	@Transactional
+	public void removeAuthenticatedUser() {
+		User user = authService.getAuthenticatedUser();
+		remove(user);
+	}
+	
+	public List<String> watchedMovies() {
+		User user = authService.getAuthenticatedUser();
+		return watchedService.findUserWatchedMovies(user);
 	}
 }
