@@ -41,7 +41,10 @@ public class MovieController {
 				   required = true, value = ApiDocumentationUtils.COUNTRY_PARAM_DESCRIPTION),
 		   
 		   @ApiImplicitParam(name = "imdb_id", paramType = "query", dataType = "String",
-		   required = true)
+		   required = true),
+		   
+		   @ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
 	})
 	public MovieDto findMovie(
 			@RequestParam(value = "country") String country,

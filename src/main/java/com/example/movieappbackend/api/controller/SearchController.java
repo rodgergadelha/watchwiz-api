@@ -60,7 +60,10 @@ public class SearchController {
 		   value = ApiDocumentationUtils.CURSOR_PARAM_DESCRIPTION),
 		   
 		   @ApiImplicitParam(name = "keyword", paramType = "query", dataType = "String",
-				   value = ApiDocumentationUtils.KEYWORD_LANGUAGE_PARAM_DESCRIPTION)
+				   value = ApiDocumentationUtils.KEYWORD_LANGUAGE_PARAM_DESCRIPTION),
+		   
+		   @ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
 	})
 	public List<MovieDto> searchBasic(
 			@RequestParam("country") String country,
@@ -114,7 +117,10 @@ public class SearchController {
 				   value = ApiDocumentationUtils.SHOW_TYPE_PARAM_DESCRIPTION),
 		   
 		@ApiImplicitParam(name = "output_language", paramType = "query", dataType = "String",
-				   value = ApiDocumentationUtils.OUTPUT_LANGUAGE_PARAM_DESCRIPTION)
+				   value = ApiDocumentationUtils.OUTPUT_LANGUAGE_PARAM_DESCRIPTION),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
 	})
 	public Object searchByTitle(
 			@RequestParam("title") String title,

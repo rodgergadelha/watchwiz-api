@@ -16,6 +16,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.nimbusds.jose.util.JSONObjectUtils;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/genres")
@@ -28,6 +31,10 @@ public class GenresController {
 	}
 	
 	@GetMapping
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
 	public Map<String, String> listGenres() throws ParseException {
 		
 		String url = String.format("%s/genres", XRapidAPIUtils.getBaseURL());

@@ -8,7 +8,7 @@ import com.example.movieappbackend.domain.model.MovieListItem;
 import com.example.movieappbackend.domain.repository.MovieListItemRepository;
 
 @Service
-public class WatchedMovieService extends UserMovieListServiceAbstract {
+public class WatchedMovieService extends MovieListServiceAbstract {
 
 	public WatchedMovieService(MovieListItemRepository repository, UserService userService) {
 		super(repository, userService);

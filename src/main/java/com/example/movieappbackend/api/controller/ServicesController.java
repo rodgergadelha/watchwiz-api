@@ -15,6 +15,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.nimbusds.jose.util.JSONObjectUtils;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/services")
@@ -27,6 +30,10 @@ public class ServicesController {
 	}
 
 	@GetMapping
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
 	public Map<String, Object> listServices() throws ParseException  {
 		
 		String url = String.format("%s/services", XRapidAPIUtils.getBaseURL());

@@ -12,7 +12,7 @@ import com.example.movieappbackend.domain.repository.MovieListItemRepository;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public abstract class UserMovieListServiceAbstract {
+public abstract class MovieListServiceAbstract {
 
 	private final MovieListItemRepository repository;
 	

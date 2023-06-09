@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.movieappbackend.domain.service.UserMovieListServiceAbstract;
+import com.example.movieappbackend.domain.service.MovieListServiceAbstract;
 import com.example.movieappbackend.domain.service.WatchLaterMovieService;
 
 import lombok.AllArgsConstructor;
@@ -13,11 +13,11 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/users/my-account/watch-later-movies")
 @AllArgsConstructor
-public class WatchLaterMovieController extends UserMovieListControllerAbstract {
+public class WatchLaterMovieController extends MovieListControllerAbstract {
 	
 	private final WatchLaterMovieService service;
 	
-	protected UserMovieListServiceAbstract getService() {
+	protected MovieListServiceAbstract getService() {
 		return this.service;
 	}
 }

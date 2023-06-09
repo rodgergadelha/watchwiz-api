@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.movieappbackend.domain.service.LikedMovieService;
-import com.example.movieappbackend.domain.service.UserMovieListServiceAbstract;
+import com.example.movieappbackend.domain.service.MovieListServiceAbstract;
 
 import lombok.AllArgsConstructor;
 
@@ -14,11 +14,11 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/users/my-account/liked-movies")
 @AllArgsConstructor
-public class LikedMovieController extends UserMovieListControllerAbstract {
+public class LikedMovieController extends MovieListControllerAbstract {
 	
 	private final LikedMovieService service;
 	
-	protected UserMovieListServiceAbstract getService() {
+	protected MovieListServiceAbstract getService() {
 		return this.service;
 	}
 }
