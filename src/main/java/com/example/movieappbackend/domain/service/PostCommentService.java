@@ -26,43 +26,51 @@ public class PostCommentService {
 
 	private final PostCommentRepository repository;
 	
+	private final PostService postService;
+	
 	private final PostCommentMapper mapper;
 	
+	private final UserService userService;
+	
 	public Page<PostCommentDto> findAllByPost(String postUuid, Pageable pageable) {
-		Post post = null;
+		Post post = postService.findByUuid(postUuid);
 		return repository.findAllByPost(post, pageable)
 				.map((postComment) -> mapper.entityToDto(postComment));
 	}
 	
-	public PostCommentDto findAndValidateByUuid(String postCommentUuid) {
-		PostComment postComment = repository.findByUuid(postCommentUuid)
+	public PostComment findByUuid(String uuid) {
+		return repository.findByUuid(uuid)
 				.orElseThrow(() -> new EntityNotFoundException(
-						String.format("Cannot find post comment with uuid: %s", postCommentUuid)
+						String.format("Cannot find post comment with uuid: %s", uuid)
 				));
+	}
+	
+	public PostCommentDto findPostCommentDtoByUuid(String uuid) {
+		PostComment postComment = findByUuid(uuid);
 		return mapper.entityToDto(postComment);
 	}
 	
 	@Transactional
 	public void save(PostCommentForm form) {
 		PostComment postComment = mapper.formToEntity(form);
-		User user = null;
-		Post post = null;
+		User user = userService.getAuthenticatedUser();
+		Post post = postService.findByUuid(form.getPostUuid());
 		postComment.setPost(post);
 		postComment.setUser(user);
 		repository.save(postComment);
 	}
 	
 	@Transactional
-	public void updateText(String postCommentUuid, String text) {
-		PostComment postComment = null;
+	public void updateText(String uuid, String text) {
+		PostComment postComment = findByUuid(uuid);
 		postComment.setText(text);
 	}
 	
 	@Transactional
-	public void remove(String postCommentUuid) {
-		findAndValidateByUuid(postCommentUuid);
+	public void remove(String uuid) {
+		PostComment postComment = findByUuid(uuid);
 		try {
-			repository.deleteByUuid(postCommentUuid);
+			repository.delete(postComment);
 			repository.flush();
 		} catch (DataIntegrityViolationException e) {
 			throw new EntityInUseException(e.getMessage());

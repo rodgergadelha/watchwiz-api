@@ -32,6 +32,10 @@ public class UserController {
 	private final UserService service;
 	
 	@GetMapping
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
 	public ResponseEntity<List<UserDto>> findAllUsers() {
 		List<UserDto> userDtos = service.findAllUsers();
 		return ResponseEntity.ok(userDtos);

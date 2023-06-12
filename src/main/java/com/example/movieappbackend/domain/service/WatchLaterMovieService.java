@@ -10,8 +10,8 @@ import com.example.movieappbackend.domain.repository.MovieListItemRepository;
 @Service
 public class WatchLaterMovieService extends MovieListServiceAbstract {
 
-	public WatchLaterMovieService(MovieListItemRepository repository, UserService userService) {
-		super(repository, userService);
+	public WatchLaterMovieService(MovieListItemService service, UserService userService) {
+		super(service, userService);
 	}
 	
 	@Override

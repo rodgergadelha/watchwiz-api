@@ -44,16 +44,10 @@ public class User implements Serializable {
 	private OffsetDateTime registrationDate;
     
     @ManyToMany
-    @JoinTable(name = "watched",
+    @JoinTable(name = "favorites",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
-    private List<MovieListItem> watched;
-    
-    @ManyToMany
-    @JoinTable(name = "liked",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
-    private List<MovieListItem> liked;
+    private List<MovieListItem> favorites;
     
     @ManyToMany
     @JoinTable(name = "watch_later",

@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public abstract class MovieListServiceAbstract {
 
-	private final MovieListItemRepository repository;
+	private final MovieListItemService movieListItemService;
 	
 	private final UserService userService;
 	
@@ -26,7 +26,7 @@ public abstract class MovieListServiceAbstract {
 	
 	@Transactional
 	public void saveMovie(MovieListItem movie) {
-		if(!repository.existsById(movie.getImdbId())) repository.save(movie);
+		if(!movieListItemService.existsByImdbId(movie.getImdbId())) movieListItemService.save(movie);
 		getMovieList().add(movie);
 	}
 	

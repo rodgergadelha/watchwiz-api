@@ -1,15 +1,21 @@
 package com.example.movieappbackend.domain.model;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.io.Serializable;
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.UUID;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 @Data
@@ -30,15 +36,11 @@ public class Post implements Serializable {
 	@Column(columnDefinition = "TEXT")
     private String text;
     
-    private Float rate;
-    
-	private String movieImdbId;
+	@OneToOne
+	@JoinColumns({@JoinColumn(name = "id_movie_list_item"), @JoinColumn(name = "id_user")})
+	private WatchedMovie watchedMovie;
 	
 	@CreationTimestamp
 	@Column(columnDefinition = "timestamp")
 	private OffsetDateTime creationDate;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user")
-    private User user;
 }
