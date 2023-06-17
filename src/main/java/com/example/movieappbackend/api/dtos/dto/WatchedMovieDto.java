@@ -20,6 +20,6 @@ public class WatchedMovieDto {
 	private String overview;
 	private String posterUrl;
 	private int imdbRating;
-	private float rate;
+	private int rate;
 	private List<Genre> genres;
 }

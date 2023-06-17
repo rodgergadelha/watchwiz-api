@@ -15,5 +15,5 @@ public class WatchedMovie {
 	@EqualsAndHashCode.Include
 	private UserMoviePair userMoviePair;
 	
-	private float rate;
+	private int rate;
 }

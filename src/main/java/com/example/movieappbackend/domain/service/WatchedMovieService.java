@@ -39,7 +39,7 @@ public class WatchedMovieService {
 	}
 	
 	@Transactional
-	public WatchedMovieDto saveWatchedMovie(MovieListItemForm form, float rate) {
+	public WatchedMovieDto saveWatchedMovie(MovieListItemForm form, int rate) {
 		
 		MovieListItem movie = movieListItemService.findByImdbIdWithNoValidation(form.getImdbId());
 		if(movie == null) movie = movieListItemService.save(form);

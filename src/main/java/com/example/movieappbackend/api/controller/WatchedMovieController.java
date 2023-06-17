@@ -55,14 +55,14 @@ public class WatchedMovieController {
 	
 	@PostMapping
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "rate", paramType = "query", dataType = "float",
+		@ApiImplicitParam(name = "rate", paramType = "query", dataType = "integer",
 				   required = true, value = "rate for watched movie"), 
 		
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
 	public ResponseEntity<WatchedMovieDto> saveWatchedMovie(@RequestBody MovieListItemForm form,
-															@RequestParam("rate") float rate) {
+															@RequestParam("rate") int rate) {
 		WatchedMovieDto watchedMovieDto = service.saveWatchedMovie(form, rate);
 		return ResponseEntity.ok(watchedMovieDto);
 	}
