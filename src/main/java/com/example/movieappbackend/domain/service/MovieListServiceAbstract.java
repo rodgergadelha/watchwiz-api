@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.movieappbackend.api.dtos.form.MovieListItemForm;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
 import com.example.movieappbackend.domain.model.MovieListItem;
 import com.example.movieappbackend.domain.model.User;
-import com.example.movieappbackend.domain.repository.MovieListItemRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -25,9 +25,11 @@ public abstract class MovieListServiceAbstract {
 	}
 	
 	@Transactional
-	public void saveMovie(MovieListItem movie) {
-		if(!movieListItemService.existsByImdbId(movie.getImdbId())) movieListItemService.save(movie);
-		getMovieList().add(movie);
+	public void saveMovie(MovieListItemForm form) {
+		if(!movieListItemService.existsByImdbId(form.getImdbId())) {
+			MovieListItem movie = movieListItemService.save(form);
+			getMovieList().add(movie);
+		}
 	}
 	
 	@Transactional

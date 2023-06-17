@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.movieappbackend.api.dtos.dto.WatchedMovieDto;
-import com.example.movieappbackend.domain.model.MovieListItem;
+import com.example.movieappbackend.api.dtos.form.MovieListItemForm;
 import com.example.movieappbackend.domain.service.WatchedMovieService;
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -44,12 +44,12 @@ public class WatchedMovieController {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<Page<List<WatchedMovieDto>>> movieList(
+	public ResponseEntity<Page<WatchedMovieDto>> watchedMovies(
 			@RequestParam("page") int page,
 			@RequestParam("size") int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<WatchedMovieDto> movies = service.watchedMovies();
-		Page<List<WatchedMovieDto>> moviesPages = new PageImpl(movies, pageable, movies.size());
+		Page<WatchedMovieDto> moviesPages = new PageImpl(movies, pageable, movies.size());
 		return ResponseEntity.ok(moviesPages);
 	}
 	
@@ -61,8 +61,9 @@ public class WatchedMovieController {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<WatchedMovieDto> saveMovie(@RequestBody MovieListItem movie, @RequestParam("rate") float rate) {
-		WatchedMovieDto watchedMovieDto = service.saveWatchedMovie(movie, rate);
+	public ResponseEntity<WatchedMovieDto> saveWatchedMovie(@RequestBody MovieListItemForm form,
+															@RequestParam("rate") float rate) {
+		WatchedMovieDto watchedMovieDto = service.saveWatchedMovie(form, rate);
 		return ResponseEntity.ok(watchedMovieDto);
 	}
 	
@@ -74,7 +75,7 @@ public class WatchedMovieController {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<?> removeMovie(@PathVariable String imdbId) {
+	public ResponseEntity<?> removeWatchedMovie(@PathVariable String imdbId) {
 		service.removeWatched(imdbId);
 		return ResponseEntity.ok().build();
 	}

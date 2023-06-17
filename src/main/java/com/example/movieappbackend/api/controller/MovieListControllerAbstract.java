@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.movieappbackend.api.dtos.form.MovieListItemForm;
 import com.example.movieappbackend.domain.model.MovieListItem;
 import com.example.movieappbackend.domain.service.MovieListServiceAbstract;
 
@@ -36,12 +37,12 @@ public abstract class MovieListControllerAbstract {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<Page<List<MovieListItem>>> movieList(
+	public ResponseEntity<Page<MovieListItem>> movieList(
 			@RequestParam("page") int page,
 			@RequestParam("size") int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<MovieListItem> movies = getService().getMovieList();
-		Page<List<MovieListItem>> moviesPages = new PageImpl(movies, pageable, movies.size());
+		Page<MovieListItem> moviesPages = new PageImpl(movies, pageable, movies.size());
 		return ResponseEntity.ok(moviesPages);
 	}
 	
@@ -50,8 +51,8 @@ public abstract class MovieListControllerAbstract {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<?> saveMovie(@RequestBody MovieListItem movie) {
-		getService().saveMovie(movie);
+	public ResponseEntity<?> saveMovie(@RequestBody MovieListItemForm form) {
+		getService().saveMovie(form);
 		return ResponseEntity.ok().build();
 	}
 	

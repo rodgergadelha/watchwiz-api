@@ -6,6 +6,9 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,5 +34,9 @@ public class MovieListItem implements Serializable {
 	
 	private int imdbRating;
 	
-	private List<String> genres;
+	@ManyToMany
+    @JoinTable(name = "movie_list_item_genre",
+    joinColumns = @JoinColumn(name = "movie_list_item_imdb_id"),
+    inverseJoinColumns = @JoinColumn(name = "genre_id"))
+	private List<Genre> genres;
 }

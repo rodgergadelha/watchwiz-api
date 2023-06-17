@@ -17,7 +17,9 @@ public class WatchedMovieMapper {
 				watchedMovie.getUserMoviePair().getMovie().getTitle(),
 				watchedMovie.getUserMoviePair().getMovie().getOverview(),
 				watchedMovie.getUserMoviePair().getMovie().getPosterUrl(),
-				watchedMovie.getRate()
+				watchedMovie.getUserMoviePair().getMovie().getImdbRating(),
+				watchedMovie.getRate(),
+				watchedMovie.getUserMoviePair().getMovie().getGenres()
 		);
 		return watchedMovieDto;
 	}

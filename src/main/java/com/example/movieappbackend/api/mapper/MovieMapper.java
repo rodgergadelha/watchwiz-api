@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import com.example.movieappbackend.api.dtos.dto.MovieDto;
+import com.example.movieappbackend.api.dtos.form.MovieListItemForm;
 import com.example.movieappbackend.domain.model.MovieListItem;
 
 import lombok.AllArgsConstructor;
@@ -22,5 +23,9 @@ public class MovieMapper {
 		MovieListItem movieListItem = modelMapper.map(movieDto, MovieListItem.class);
 		movieListItem.setPosterUrl(movieDto.getPosterUrls().get("original"));
 		return movieListItem;
+	}
+	
+	public MovieListItem movieListItem(MovieListItemForm form) {
+		return modelMapper.map(form, MovieListItem.class);
 	}
 }

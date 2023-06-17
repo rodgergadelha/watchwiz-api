@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.movieappbackend.api.dtos.dto.WatchedMovieDto;
+import com.example.movieappbackend.api.dtos.form.MovieListItemForm;
 import com.example.movieappbackend.api.mapper.WatchedMovieMapper;
 import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
@@ -38,10 +39,10 @@ public class WatchedMovieService {
 	}
 	
 	@Transactional
-	public WatchedMovieDto saveWatchedMovie(MovieListItem movie, float rate) {
-		if(!movieListItemService.existsByImdbId(movie.getImdbId())) {
-			movie = movieListItemService.save(movie);
-		}
+	public WatchedMovieDto saveWatchedMovie(MovieListItemForm form, float rate) {
+		
+		MovieListItem movie = movieListItemService.findByImdbIdWithNoValidation(form.getImdbId());
+		if(movie == null) movie = movieListItemService.save(form);
 		
 		User loggedInUser = userService.getAuthenticatedUser();
 		WatchedMovie watchedMovie = new WatchedMovie();
