@@ -1,6 +1,7 @@
 package com.example.movieappbackend.domain.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,4 +28,8 @@ public class MovieListItem implements Serializable {
 	private String overview;
 	
 	private String posterUrl;
+	
+	private int imdbRating;
+	
+	private List<String> genres;
 }
