@@ -10,8 +10,11 @@ import lombok.NoArgsConstructor;
 public class PostDto {
 
 	private String uuid;
-	private String url;
+	private String username;
+	private String userProfileImagePath;
     private String text;
-    private WatchedMovieDto watchedMovie;
+    private String movieTitle;
+    private float movieRate;
+    private String moviePosterUrl;
 	private String creationDate;
 }

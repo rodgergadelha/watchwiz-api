@@ -8,9 +8,6 @@ import lombok.Data;
 
 @Data
 public class PostForm {
-
-	@NotBlank
-	private String url;
 	
 	@Size(max = 33000)
 	@NotNull

@@ -20,7 +20,13 @@ public class PostMapper {
 	}
 	
 	public PostDto entityToDto(Post post) {
-		return modelMapper.map(post, PostDto.class);
+		PostDto postDto = modelMapper.map(post, PostDto.class);
+		postDto.setUsername(post.getWatchedMovie().getUserMoviePair().getUser().getUsername());
+		postDto.setUserProfileImagePath(post.getWatchedMovie().getUserMoviePair().getUser().getProfileImagePath());
+		postDto.setMovieTitle(post.getWatchedMovie().getUserMoviePair().getMovie().getTitle());
+		postDto.setMovieRate(post.getWatchedMovie().getRate());
+		postDto.setMoviePosterUrl(post.getWatchedMovie().getUserMoviePair().getMovie().getPosterUrl());
+		return postDto;
 	}
 	
 	public void copyFormDataToEntity(PostForm form, Post post) {

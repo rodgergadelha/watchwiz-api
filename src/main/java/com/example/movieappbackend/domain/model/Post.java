@@ -1,8 +1,10 @@
 package com.example.movieappbackend.domain.model;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,8 +34,6 @@ public class Post implements Serializable {
     private Long id;
     
 	private final String uuid = UUID.randomUUID().toString();
-	
-	private String url;
     
 	@Column(columnDefinition = "TEXT")
     private String text;
@@ -43,4 +45,10 @@ public class Post implements Serializable {
 	@CreationTimestamp
 	@Column(columnDefinition = "timestamp")
 	private OffsetDateTime creationDate;
+	
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @JoinTable(name = "post_like",
+    joinColumns = @JoinColumn(name = "post_id"),
+    inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> usersThatLiked;
 }

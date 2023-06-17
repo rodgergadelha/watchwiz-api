@@ -1,13 +1,11 @@
 package com.example.movieappbackend.api.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.movieappbackend.api.dtos.dto.PostDto;
+import com.example.movieappbackend.api.dtos.dto.UserDto;
 import com.example.movieappbackend.api.dtos.form.PostForm;
 import com.example.movieappbackend.domain.service.PostService;
 
@@ -44,12 +43,11 @@ public class PostController {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<Page<List<PostDto>>> findAllPosts(@RequestParam("page") int page,
+	public ResponseEntity<Page<PostDto>> findAllPosts(@RequestParam("page") int page,
 															@RequestParam("size") int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		List<PostDto> postsDtos = service.findAllPosts();
-		Page<List<PostDto>> postsDtosPages = new PageImpl(postsDtos, pageable, postsDtos.size());
-		return ResponseEntity.ok(postsDtosPages);
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+		Page<PostDto> postDtos = service.findAllPosts(pageable);
+		return ResponseEntity.ok(postDtos);
 	}
 	
 	@GetMapping("/{username}/posts")
@@ -66,13 +64,60 @@ public class PostController {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<Page<List<PostDto>>> findAllByUser(@PathVariable String username,
+	public ResponseEntity<Page<PostDto>> findAllByUser(@PathVariable String username,
 															@RequestParam("page") int page,
 															@RequestParam("size") int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		List<PostDto> postsDtos = service.findAllByUser(username);
-		Page<List<PostDto>> postsDtosPages = new PageImpl(postsDtos, pageable, postsDtos.size());
-		return ResponseEntity.ok(postsDtosPages);
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+		Page<PostDto> postDtos = service.findAllByUser(username, pageable);
+		return ResponseEntity.ok(postDtos);
+	}
+	
+	@GetMapping("/posts/{postUuid}/likes")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "postUuid", paramType = "path", dataType = "string",
+				   required = true, value = "UUID of post"),
+		
+		@ApiImplicitParam(name = "page", paramType = "query", dataType = "integer",
+		   required = true, value = "number of the page"),
+
+		@ApiImplicitParam(name = "size", paramType = "query", dataType = "integer",
+		required = true, value = "size of a page"),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<Page<UserDto>> likes(@PathVariable String postUuid,
+												@RequestParam("page") int page,
+												@RequestParam("size") int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+		Page<UserDto> userDtos = service.usersThatLikedPost(postUuid, pageable);
+		return ResponseEntity.ok(userDtos);
+	}
+	
+	@PostMapping("/posts/{postUuid}/likes")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "postUuid", paramType = "path", dataType = "string",
+				   required = true, value = "UUID of post"),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<?> likePost(@PathVariable String postUuid) {
+		service.likePost(postUuid);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/posts/{postUuid}/likes")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "postUuid", paramType = "path", dataType = "string",
+				   required = true, value = "UUID of post"),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<?> dislikePost(@PathVariable String postUuid) {
+		service.dislikePost(postUuid);
+		return ResponseEntity.ok().build();
 	}
 	
 	@PostMapping("/posts")

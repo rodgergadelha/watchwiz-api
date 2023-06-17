@@ -1,15 +1,20 @@
 package com.example.movieappbackend.domain.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.movieappbackend.api.dtos.dto.PostDto;
+import com.example.movieappbackend.api.dtos.dto.UserDto;
 import com.example.movieappbackend.api.dtos.form.PostForm;
 import com.example.movieappbackend.api.mapper.PostMapper;
+import com.example.movieappbackend.api.mapper.UserMapper;
+import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.exception.EntityInUseException;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
 import com.example.movieappbackend.domain.model.Post;
@@ -31,10 +36,10 @@ public class PostService {
 	
 	private final PostMapper mapper;
 	
-	public List<PostDto> findAllPosts() {
-		return repository.findAll().stream()
-				.map(post -> mapper.entityToDto(post))
-				.collect(Collectors.toList());
+	private final UserMapper userMapper;
+	
+	public Page<PostDto> findAllPosts(Pageable pageable) {
+		return repository.findAll(pageable).map(post -> mapper.entityToDto(post));
 	}
 	
 	@Transactional
@@ -42,16 +47,18 @@ public class PostService {
 		Post post = mapper.formToEntity(form);
 		User loggedInUser = userService.getAuthenticatedUser();
 		WatchedMovie watchedMovie = watchedMovieService.findByImdbIdAndUser(form.getWatchedMovie(), loggedInUser);
+		if(repository.existsByWatchedMovie(watchedMovie)) {
+			throw new BusinessException(String.format("Post with movie: %s already exists", 
+					watchedMovie.getUserMoviePair().getMovie().getTitle()));
+		}
 		post.setWatchedMovie(watchedMovie);
 		post = repository.save(post);
 		return mapper.entityToDto(post);
 	}
 	
-	public List<PostDto> findAllByUser(String username) {
+	public Page<PostDto> findAllByUser(String username, Pageable pageable) {
 		User user = userService.findByUsername(username);
-		return repository.findAllByUser(user).stream()
-				.map(post -> mapper.entityToDto(post))
-				.collect(Collectors.toList());
+		return repository.findAllByUser(user, pageable).map(post -> mapper.entityToDto(post));
 	}
 	
 	public Post findByUuid(String uuid) {
@@ -63,11 +70,36 @@ public class PostService {
 	@Transactional
 	public void remove(String postUuid) {
 		Post post = findByUuid(postUuid);
+		User user = post.getWatchedMovie().getUserMoviePair().getUser();
+		userService.checkIfLogged(user);
 		try {
 			repository.delete(post);
 			repository.flush();
 		} catch (DataIntegrityViolationException e) {
 			throw new EntityInUseException(e.getMessage());
 		}
+	}
+	
+	public Page<UserDto> usersThatLikedPost(String postUuid, Pageable pageable) {
+		Post post = findByUuid(postUuid);
+		List<User> usersThatLiked = post.getUsersThatLiked();
+		int size = usersThatLiked.size();
+		Page<User> usersThatLikedPage = new PageImpl<User>(usersThatLiked, pageable, size);
+		return usersThatLikedPage.map(user -> userMapper.entityToDto(user));
+	}
+	
+	@Transactional
+	public void likePost(String postUuid) {
+		Post post = findByUuid(postUuid);
+		User loggedInUser = userService.getAuthenticatedUser();
+		List<User> usersThatLiked = post.getUsersThatLiked();
+		if(!usersThatLiked.contains(loggedInUser)) usersThatLiked.add(loggedInUser);
+	}
+	
+	@Transactional
+	public void dislikePost(String postUuid) {
+		Post post = findByUuid(postUuid);
+		User loggedInUser = userService.getAuthenticatedUser();
+		post.getUsersThatLiked().remove(loggedInUser);
 	}
 }

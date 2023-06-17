@@ -138,4 +138,9 @@ public class UserService {
 		user.setEmail(email);
 		verificationTokenService.remove(verificationToken);
 	}
+	
+	public void checkIfLogged(User user) {
+		User loggedInUser = getAuthenticatedUser();
+		if(!loggedInUser.equals(user)) throw new BusinessException("Operation not allowed");
+	}
 }
