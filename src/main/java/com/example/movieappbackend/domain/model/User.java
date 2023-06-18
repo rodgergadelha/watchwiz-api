@@ -54,4 +54,10 @@ public class User implements Serializable {
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "movie_list_item_imdb_id"))
     private List<MovieListItem> watchLater;
+    
+    @ManyToMany
+    @JoinTable(name = "following",
+    joinColumns = @JoinColumn(name = "follower_user_id"),
+    inverseJoinColumns = @JoinColumn(name = "followed_user_id"))
+    private List<User> following;
 }

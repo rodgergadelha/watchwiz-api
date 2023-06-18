@@ -4,11 +4,15 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +43,68 @@ public class UserController {
 	public ResponseEntity<List<UserDto>> findAllUsers() {
 		List<UserDto> userDtos = service.findAllUsers();
 		return ResponseEntity.ok(userDtos);
+	}
+	
+	@GetMapping("/my-account/following")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "page", paramType = "query", dataType = "integer",
+				   required = true, value = "number of the page"),
+		
+		@ApiImplicitParam(name = "size", paramType = "query", dataType = "integer",
+		   required = true, value = "size of a page"),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<Page<UserDto>> following( @RequestParam("page") int page,
+													@RequestParam("size") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<UserDto> userDtos = service.following(pageable);
+		return userDtos.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(userDtos);
+	}
+	
+	@GetMapping("/my-account/followers")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "page", paramType = "query", dataType = "integer",
+				   required = true, value = "number of the page"),
+		
+		@ApiImplicitParam(name = "size", paramType = "query", dataType = "integer",
+		   required = true, value = "size of a page"),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<Page<UserDto>> followers( @RequestParam("page") int page,
+													@RequestParam("size") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<UserDto> userDtos = service.followers(pageable);
+		return userDtos.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(userDtos);
+	}
+	
+	@PostMapping("/my-account/following")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "username", paramType = "query", dataType = "String",
+				   required = true),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<UserDto> follow(@RequestParam("username") String username) {
+		service.follow(username);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/my-account/following/{username}")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "username", paramType = "path", dataType = "String",
+				   required = true),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<UserDto> unfollow(@PathVariable String username) {
+		service.unfollow(username);
+		return ResponseEntity.ok().build();
 	}
 	
 	@GetMapping("/{username}")

@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
@@ -41,7 +44,35 @@ public class UserService {
 	public List<UserDto> findAllUsers() {
 		return repository.findAll().stream().map(user -> mapper.entityToDto(user))
 				.collect(Collectors.toList());
-	}	
+	}
+	
+	public Page<UserDto> following(Pageable pageable) {
+		List<User> following = getAuthenticatedUser().getFollowing();
+		int size = following.size();
+		return new PageImpl<User>(following, pageable, size).map(user -> mapper.entityToDto(user));
+	}
+	
+	public Page<UserDto> followers(Pageable pageable) {
+		return repository.findFollowers(getAuthenticatedUser(), pageable)
+				.map(user -> mapper.entityToDto(user));
+	}
+	
+	@Transactional
+	public void follow(String username) {
+		User loggedInUser = getAuthenticatedUser();
+		if(loggedInUser.getUsername().equals(username)) throw new BusinessException("Cannot follow yourself");
+		User userToFollow = findByUsername(username);
+		if(!userToFollow.isEnabled()) throw new BusinessException("Cannot follow a disabled user");
+		List<User> following = loggedInUser.getFollowing();
+		if(!following.contains(userToFollow)) following.add(userToFollow);
+	}
+	
+	@Transactional
+	public void unfollow(String username) {
+		User loggedInUser = getAuthenticatedUser();
+		User userToFollow = findByUsername(username);
+		loggedInUser.getFollowing().remove(userToFollow);
+	}
 	
 	public UserDto findUserDtoByUsername(String username) {
 		User user = findByUsername(username);

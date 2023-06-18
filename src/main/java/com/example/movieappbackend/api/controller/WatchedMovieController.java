@@ -49,8 +49,8 @@ public class WatchedMovieController {
 			@RequestParam("size") int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<WatchedMovieDto> movies = service.watchedMovies();
-		Page<WatchedMovieDto> moviesPages = new PageImpl(movies, pageable, movies.size());
-		return ResponseEntity.ok(moviesPages);
+		Page<WatchedMovieDto> moviesPages = new PageImpl<WatchedMovieDto>(movies, pageable, movies.size());
+		return moviesPages.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(moviesPages);
 	}
 	
 	@PostMapping

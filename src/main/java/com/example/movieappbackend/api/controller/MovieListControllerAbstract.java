@@ -42,8 +42,8 @@ public abstract class MovieListControllerAbstract {
 			@RequestParam("size") int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<MovieListItem> movies = getService().getMovieList();
-		Page<MovieListItem> moviesPages = new PageImpl(movies, pageable, movies.size());
-		return ResponseEntity.ok(moviesPages);
+		Page<MovieListItem> moviesPages = new PageImpl<MovieListItem>(movies, pageable, movies.size());
+		return moviesPages.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(moviesPages);
 	}
 	
 	@PostMapping
