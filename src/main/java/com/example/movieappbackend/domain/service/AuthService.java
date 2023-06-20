@@ -3,9 +3,9 @@ package com.example.movieappbackend.domain.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.movieappbackend.api.dtos.form.RegisterForm;
-import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.model.NotificationEmail;
 import com.example.movieappbackend.domain.model.User;
 import com.example.movieappbackend.domain.model.VerificationToken;
@@ -34,6 +34,8 @@ public class AuthService {
 		mailService.sendMail(new NotificationEmail(
 				"Please activate your account!", user.getEmail(), emailBody
 		));
+		MultipartFile image = form.getImage();
+		userService.uploadProfileImage(form.getUsername(), image);
 	}
 	
 	@Transactional

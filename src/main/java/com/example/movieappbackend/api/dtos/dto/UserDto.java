@@ -13,5 +13,4 @@ public class UserDto {
 	private String birthdate;
 	private boolean enabled;
 	private String registrationDate;
-	private String profileImagePath;
 }

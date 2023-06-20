@@ -11,7 +11,6 @@ public class PostDto {
 
 	private String uuid;
 	private String username;
-	private String userProfileImagePath;
     private String text;
     private String movieTitle;
     private float movieRate;

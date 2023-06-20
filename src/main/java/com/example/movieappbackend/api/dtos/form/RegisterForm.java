@@ -9,6 +9,8 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 @Data
@@ -33,5 +35,5 @@ public class RegisterForm {
 	@NotNull
 	private Date birthdate;
 	
-	private String profileImagePath;
+	private MultipartFile image;
 }

@@ -4,17 +4,19 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -130,12 +132,12 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@PutMapping("/my-account")
+	@PutMapping(value = "/my-account", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<UserDto> updateAuthenticatedUser(@RequestBody @Valid RegisterForm form) {
+	public ResponseEntity<UserDto> updateAuthenticatedUser(@ModelAttribute @Valid RegisterForm form) {
 		UserDto userDto = service.updateAuthenticatedUser(form);
 		return ResponseEntity.ok(userDto);
 	}
@@ -147,5 +149,11 @@ public class UserController {
 		
 		service.verifyTokenAndUpdateUserEmail(token, email);
 		return ResponseEntity.ok("Email updated successfully!");
+	}
+	
+	@GetMapping(value = "/my-account/profile-image", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<Resource> profileImage() {
+		Resource resource = service.getProfileImage();
+		return resource == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(resource);
 	}
 }

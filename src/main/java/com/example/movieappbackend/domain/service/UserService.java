@@ -1,9 +1,16 @@
 package com.example.movieappbackend.domain.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.movieappbackend.api.dtos.dto.UserDto;
 import com.example.movieappbackend.api.dtos.form.RegisterForm;
@@ -40,6 +48,8 @@ public class UserService {
 	private final MailService mailService;
 	
 	private final VerificationTokenService verificationTokenService;
+	
+	private final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "\\src\\main\\resources\\images\\";
 	
 	public List<UserDto> findAllUsers() {
 		return repository.findAll().stream().map(user -> mapper.entityToDto(user))
@@ -129,7 +139,7 @@ public class UserService {
 		String username = form.getUsername();
 		String password = form.getPassword();
 		Date birthdate = form.getBirthdate();
-		String profileImagePath = form.getProfileImagePath();
+		MultipartFile image = form.getImage();
 		
 		if(!email.equals(user.getEmail())) {
 			String token = verificationTokenService.generateVerificationToken(user);
@@ -155,8 +165,8 @@ public class UserService {
 			user.setBirthdate(birthdate);
 		}
 		
-		if(profileImagePath == null || !profileImagePath.equals(user.getProfileImagePath())) {
-			user.setProfileImagePath(profileImagePath);
+		if(image != null) {
+			uploadProfileImage(username, image);
 		}
 		
 		return mapper.entityToDto(user);
@@ -173,5 +183,31 @@ public class UserService {
 	public void checkIfLogged(User user) {
 		User loggedInUser = getAuthenticatedUser();
 		if(!loggedInUser.equals(user)) throw new BusinessException("Operation not allowed");
+	}
+	
+	public void uploadProfileImage(String imageName, MultipartFile image) {
+		if(!image.isEmpty()) {
+			try {
+				Path path = Paths.get(UPLOAD_DIRECTORY, imageName);
+				Files.write(path, image.getBytes());
+			} catch (IOException e) {
+				throw new RuntimeException("Error at image uploading");
+			}
+		}
+	}
+	
+	public Resource getProfileImage() {
+		User user = getAuthenticatedUser();
+		String imageName = user.getUsername();
+		ByteArrayResource resource;
+		try {
+			Path path = Paths.get(UPLOAD_DIRECTORY, imageName);
+			resource = new ByteArrayResource(Files.readAllBytes(path));
+		} catch (NoSuchFileException e) {
+			return null;
+		} catch (IOException e) {
+			throw new RuntimeException("Error at image download");
+		}
+		return resource;
 	}
 }

@@ -2,12 +2,13 @@ package com.example.movieappbackend.api.controller;
 
 import javax.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +27,8 @@ public class AuthController {
 
 	private final AuthService service;
 	
-	@PostMapping("/signup")
-	public ResponseEntity<String> signup(@RequestBody @Valid RegisterForm form) {
+	@PostMapping(value = "/signup", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ResponseEntity<String> signup(@ModelAttribute @Valid RegisterForm form) {
 		service.signup(form);
 		return ResponseEntity.ok("User registration successful!");
 	}

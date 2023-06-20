@@ -37,8 +37,6 @@ public class User implements Serializable {
     
     private boolean enabled;
     
-    private String profileImagePath;
-    
     @CreationTimestamp
 	@Column(columnDefinition = "timestamp")
 	private OffsetDateTime registrationDate;
