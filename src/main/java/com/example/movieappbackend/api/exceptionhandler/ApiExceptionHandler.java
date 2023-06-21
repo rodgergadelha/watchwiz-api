@@ -4,17 +4,20 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.example.movieappbackend.domain.exception.BusinessException;
@@ -46,6 +49,57 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
 
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
+    }
+	
+	 @Override
+    protected ResponseEntity<Object> handleNoHandlerFoundException(
+            NoHandlerFoundException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+	 	ApiErrorType problemType = ApiErrorType.RESOURCE_NOT_FOUND;
+        String detail = String.format(
+                "no resource found for %s", ex.getRequestURL()
+        );
+
+        ApiError apiError = createApiErrorBuilder(status, problemType, detail).build();
+
+        return handleExceptionInternal(ex, apiError, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+        Throwable rootCause = ExceptionUtils.getRootCause(ex);
+
+        if(rootCause instanceof InvalidFormatException) {
+            return handleInvalidFormat((InvalidFormatException) rootCause,
+                    headers, status, request);
+        } else if(rootCause instanceof PropertyBindingException) {
+            return handlePropertyBinding((PropertyBindingException) rootCause,
+                    headers, status, request);
+        }
+
+        ApiErrorType apiErrorType = ApiErrorType.INCOMPREHENSIBLE_MESSAGE;
+        String detail = "The request body is invalid. Check syntax error.";
+        ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
+
+        return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
+    }
+    
+    @Override
+    public ResponseEntity<Object> handleBindException(
+            BindException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+        return handleValidationType(ex, ex.getBindingResult(), headers, status, request);
     }
 	
 	@ExceptionHandler(EntityNotFoundException.class)
@@ -85,16 +139,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError apiError = createApiErrorBuilder(status, apiErrorType, detail).build();
 
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
-    }
-	
-	 @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatus status,
-            WebRequest request) {
-
-        return handleValidationType(ex, ex.getBindingResult(), headers, status, request);
     }
 
     public ResponseEntity<Object> handleValidationType(

@@ -5,10 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -50,6 +51,9 @@ public class UserService {
 	private final VerificationTokenService verificationTokenService;
 	
 	private final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "\\src\\main\\resources\\images\\";
+	
+	@Value("${api.host}")
+	private String host;
 	
 	public List<UserDto> findAllUsers() {
 		return repository.findAll().stream().map(user -> mapper.entityToDto(user))
@@ -133,18 +137,19 @@ public class UserService {
 	}
 	
 	@Transactional
-	public UserDto updateAuthenticatedUser(RegisterForm form) {
+	public String updateAuthenticatedUser(RegisterForm form) {
 		User user = getAuthenticatedUser();
 		String email = form.getEmail();
 		String username = form.getUsername();
 		String password = form.getPassword();
-		Date birthdate = form.getBirthdate();
+		LocalDate birthdate = form.getBirthdate();
 		MultipartFile image = form.getImage();
+		boolean changedEmail = !email.equals(user.getEmail());
 		
-		if(!email.equals(user.getEmail())) {
+		if(changedEmail) {
 			String token = verificationTokenService.generateVerificationToken(user);
 			String emailBody = String.format("Click on the below url to update your email:\n"
-					+ "http://localhost:8080/users/my-account/email-update/%s?email=%s", token, email);
+					+ "%s/users/my-account/email-update/%s?email=%s", host, token, email);
 			mailService.sendMail(new NotificationEmail(
 					"Confirm your email update!", email, emailBody
 			));
@@ -161,7 +166,7 @@ public class UserService {
 			user.setPassword(passwordEncoder.encode(form.getPassword()));
 		}
 		
-		if(!birthdate.equals(user.getBirthdate())) {
+		if(birthdate.compareTo(user.getBirthdate()) != 0) {
 			user.setBirthdate(birthdate);
 		}
 		
@@ -169,7 +174,7 @@ public class UserService {
 			uploadProfileImage(username, image);
 		}
 		
-		return mapper.entityToDto(user);
+		return changedEmail ? "Check your email to complete the email update" : null;
 	}
 	
 	@Transactional
@@ -186,7 +191,7 @@ public class UserService {
 	}
 	
 	public void uploadProfileImage(String imageName, MultipartFile image) {
-		if(!image.isEmpty()) {
+		if(image != null && !image.isEmpty()) {
 			try {
 				Path path = Paths.get(UPLOAD_DIRECTORY, imageName);
 				Files.write(path, image.getBytes());

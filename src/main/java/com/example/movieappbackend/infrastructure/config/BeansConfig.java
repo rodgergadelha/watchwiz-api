@@ -17,4 +17,9 @@ public class BeansConfig {
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
+	
+	@Bean
+	public String string() {
+		return new String();
+	}
 }

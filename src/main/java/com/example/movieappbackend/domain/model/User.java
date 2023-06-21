@@ -1,16 +1,23 @@
 package com.example.movieappbackend.domain.model;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.io.Serializable;
-import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 @Data
@@ -31,7 +38,7 @@ public class User implements Serializable {
     private String email;
     
     @Column(columnDefinition = "date")
-    private Date birthdate;
+    private LocalDate birthdate;
     
     private String password;
     

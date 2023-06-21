@@ -1,5 +1,6 @@
 package com.example.movieappbackend.domain.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,9 @@ public class AuthService {
 	private final VerificationTokenService verificationTokenService;
 	
 	private final MailService mailService;
+	
+	@Value("${api.host}")
+	private String host;
 
 	@Transactional
 	public void signup(RegisterForm form) {
@@ -30,7 +34,7 @@ public class AuthService {
 		User user = userService.save(form);
 		String token = verificationTokenService.generateVerificationToken(user);
 		String emailBody = String.format("Thank you for signing up to WatchWiz, click on the below url to activate your account:\n"
-				+ "http://localhost:8080/auth/account-verification/%s", token);
+				+ "%s/auth/account-verification/%s", host ,token);
 		mailService.sendMail(new NotificationEmail(
 				"Please activate your account!", user.getEmail(), emailBody
 		));

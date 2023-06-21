@@ -137,9 +137,9 @@ public class UserController {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<UserDto> updateAuthenticatedUser(@ModelAttribute @Valid RegisterForm form) {
-		UserDto userDto = service.updateAuthenticatedUser(form);
-		return ResponseEntity.ok(userDto);
+	public ResponseEntity<?> updateAuthenticatedUser(@ModelAttribute @Valid RegisterForm form) {
+		String result = service.updateAuthenticatedUser(form);
+		return result == null ? ResponseEntity.ok().build() : ResponseEntity.ok(result);
 	}
 	
 	@GetMapping("/my-account/email-update/{token}")
