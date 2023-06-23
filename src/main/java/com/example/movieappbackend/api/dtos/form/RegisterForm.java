@@ -6,7 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,13 +23,11 @@ public class RegisterForm {
 	private String email;
 	
 	@NotBlank
-	@Pattern(regexp = "^[a-zA-Z0-9]{3,25}$",
-    message = "Username must be of 3 to 25 length with no special characters")
+	@Size(min = 3, max = 25, message = "username must have between 3 and 25 characters")
 	private String username;
 	
 	@NotBlank
-	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#$@!%&*?])[A-Za-z\\d#$@!%&*?]{6,}$",
-    message = "Password must contain at least 1 uppercase, 1 lowercase, 1 special character and 1 digit, and a size of at least 6 characters")
+	@Size(min = 6, message = "password must have at least 6 characters")
 	private String password;
 	
 	@Past

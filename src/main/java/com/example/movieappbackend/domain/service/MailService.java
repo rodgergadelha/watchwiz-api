@@ -22,16 +22,15 @@ public class MailService {
 
 	@Async
     void sendMail(NotificationEmail notificationEmail) {
-        MimeMessagePreparator messagePreparator = mimeMessage -> {
+    	MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-            messageHelper.setFrom("watchwizbackend@email.com");
+            messageHelper.setFrom("watchwiz01@gmail.com");
             messageHelper.setTo(notificationEmail.getRecipient());
             messageHelper.setSubject(notificationEmail.getSubject());
             messageHelper.setText(notificationEmail.getBody());
         };
         try {
             mailSender.send(messagePreparator);
-            log.info("Activation email sent!!");
         } catch (MailException e) {
             log.error("Exception occurred when sending mail", e);
             throw new BusinessException("Exception occurred when sending mail to " + notificationEmail.getRecipient());

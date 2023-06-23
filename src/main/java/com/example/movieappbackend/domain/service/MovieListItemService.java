@@ -24,6 +24,10 @@ public class MovieListItemService {
 	
 	private final GenreService genreService;
 	
+	public List<MovieListItem> findAll() {
+		return repository.findAll();
+	}
+	
 	public MovieListItem findByImdbId(String imdbId) {
 		return repository.findByImdbId(imdbId)
 				.orElseThrow(() -> new EntityNotFoundException(

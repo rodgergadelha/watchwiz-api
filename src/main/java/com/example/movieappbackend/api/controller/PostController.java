@@ -142,4 +142,22 @@ public class PostController {
 		service.remove(postUuid);
 		return ResponseEntity.ok().build();
 	}
+	
+	@GetMapping("/users/my-account/following/posts")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "page", paramType = "query", dataType = "integer",
+		   required = true, value = "number of the page"),
+
+		@ApiImplicitParam(name = "size", paramType = "query", dataType = "integer",
+		required = true, value = "size of a page"),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<Page<PostDto>> postsFromFollowing(@RequestParam("page") int page,
+															@RequestParam("size") int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+		Page<PostDto> postDtos = service.findAllByUserFollowing(pageable);
+		return ResponseEntity.ok(postDtos);
+	}
 }

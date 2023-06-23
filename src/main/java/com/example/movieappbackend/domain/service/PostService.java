@@ -102,4 +102,10 @@ public class PostService {
 		User loggedInUser = userService.getAuthenticatedUser();
 		post.getUsersThatLiked().remove(loggedInUser);
 	}
+	
+	public Page<PostDto> findAllByUserFollowing(Pageable pageable) {
+		User user = userService.getAuthenticatedUser();
+		return repository.findAllByUserFollowing(user.getFollowing(), pageable)
+				.map(post -> mapper.entityToDto(post));
+	}
 }

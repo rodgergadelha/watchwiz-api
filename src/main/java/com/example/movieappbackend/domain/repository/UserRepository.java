@@ -20,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	boolean existsByUsername(String username);
 	
+	boolean existsByEmail(String username);
+	
 	@Query("from User u where :user member of u.following")
 	Page<User> findFollowers(@Param("user") User user, Pageable pageable);
 }

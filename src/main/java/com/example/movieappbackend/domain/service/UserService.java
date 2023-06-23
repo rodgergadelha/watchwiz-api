@@ -84,8 +84,8 @@ public class UserService {
 	@Transactional
 	public void unfollow(String username) {
 		User loggedInUser = getAuthenticatedUser();
-		User userToFollow = findByUsername(username);
-		loggedInUser.getFollowing().remove(userToFollow);
+		User userToUnfollow = findByUsername(username);
+		loggedInUser.getFollowing().remove(userToUnfollow);
 	}
 	
 	public UserDto findUserDtoByUsername(String username) {
@@ -103,7 +103,10 @@ public class UserService {
 	public User save(RegisterForm form) {
 		if(repository.existsByUsername(form.getUsername())) {
 			throw new BusinessException(String.format("Username: %s already exists", form.getUsername()));
+		} else if(repository.existsByEmail(form.getEmail())) {
+			throw new BusinessException(String.format("Email: %s already exists", form.getEmail()));
 		}
+		
 		User user = mapper.formToEntity(form);
 		return repository.save(user);
 	}

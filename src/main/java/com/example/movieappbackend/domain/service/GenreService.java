@@ -1,8 +1,10 @@
 package com.example.movieappbackend.domain.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.model.Genre;
@@ -26,12 +28,28 @@ public class GenreService {
 	public Genre save(String name) {
 		User loggedInUser = userService.getAuthenticatedUser();
 		if(!loggedInUser.getUsername().equals("rodger")) throw new BusinessException("Only admin can register genres");
-		Genre genre = new Genre();
-		genre.setName(name);
+		Genre genre = new Genre(name);
 		return repository.save(genre);
+	}
+	
+	@Transactional
+	public List<Genre> save(List<String> genreNames) {
+		User loggedInUser = userService.getAuthenticatedUser();
+		if(!loggedInUser.getUsername().equals("rodger")) throw new BusinessException("Only admin can register genres");
+		
+		List<Genre> genres = genreNames.stream()
+				.map(genreName -> repository.save(new Genre(genreName)))
+				.collect(Collectors.toList());
+		
+		return genres;
 	}
 	
 	public List<Genre> findAllByIdIn(List<Long> ids) {
 		return repository.findAllByIdIn(ids);
+	}
+	
+	@Transactional
+	public void delete(Long id) {
+		repository.deleteById(id);
 	}
 }

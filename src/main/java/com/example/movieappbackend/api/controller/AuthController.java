@@ -30,7 +30,7 @@ public class AuthController {
 	@PostMapping(value = "/signup", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public ResponseEntity<String> signup(@ModelAttribute @Valid RegisterForm form) {
 		service.signup(form);
-		return ResponseEntity.ok("User registration successful!");
+		return ResponseEntity.ok("User registration successful! An activation link was sent to your email!");
 	}
 	
 	@GetMapping("/account-verification/{token}")

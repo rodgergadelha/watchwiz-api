@@ -1,5 +1,6 @@
 package com.example.movieappbackend.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -24,4 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 	Optional<Post> findByUuid(String uuid);
 	
 	boolean existsByWatchedMovie(WatchedMovie watchedMovie);
+	
+	@Query("from Post p where p.watchedMovie.userMoviePair.user in :following")
+	Page<Post> findAllByUserFollowing(@Param("following") List<User> following, Pageable pageable);
 }
