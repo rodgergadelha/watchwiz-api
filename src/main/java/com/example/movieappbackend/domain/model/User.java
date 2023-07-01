@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,6 +23,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @Data
 @Entity
+@Table(name = "app_user")
 public class User implements Serializable {
     
 	private static final long serialVersionUID = 1L;
