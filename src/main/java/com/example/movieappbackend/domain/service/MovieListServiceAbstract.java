@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.movieappbackend.api.dtos.form.MovieListItemForm;
+import com.example.movieappbackend.domain.exception.BusinessException;
 import com.example.movieappbackend.domain.exception.EntityNotFoundException;
 import com.example.movieappbackend.domain.model.MovieListItem;
 import com.example.movieappbackend.domain.model.User;
@@ -26,10 +27,21 @@ public abstract class MovieListServiceAbstract {
 	
 	@Transactional
 	public void saveMovie(MovieListItemForm form) {
-		if(!movieListItemService.existsByImdbId(form.getImdbId())) {
-			MovieListItem movie = movieListItemService.save(form);
-			getMovieList().add(movie);
+		
+		List<MovieListItem> movies = getMovieList();
+		boolean movieExists = movies.stream()
+				.anyMatch(movie -> movie.getImdbId().equals(form.getImdbId()));
+		
+		if(movieExists) {
+			throw new BusinessException(
+					String.format("Movie with imdbId: %s is already saved", form.getImdbId())
+			);
 		}
+		
+		MovieListItem movie = movieListItemService.findByImdbIdWithNoValidation(form.getImdbId());
+		if(movie == null) movie = movieListItemService.save(form);
+		
+		getMovieList().add(movie);
 	}
 	
 	@Transactional
