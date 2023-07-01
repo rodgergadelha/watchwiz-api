@@ -43,8 +43,8 @@ public class MovieListItemService {
 	@Transactional
 	public MovieListItem save(MovieListItemForm form) {
 		MovieListItem movie = mapper.movieListItem(form);
-		List<Genre> genres = genreService.findAllByIdIn(form.getGenresIds());
-		if(genres.size() != form.getGenresIds().size()) throw new EntityNotFoundException("Cannot find some ids");
+		List<Genre> genres = genreService.findAllByNameIn(form.getGenres());
+		if(genres.size() != form.getGenres().size()) throw new EntityNotFoundException("Cannot find some informed genres");
 		movie.setGenres(genres);
 		return repository.save(movie);
 	}

@@ -25,5 +25,5 @@ public class MovieListItemForm {
 	
 	private int imdbRating;
 	
-	private List<Long> genresIds;
+	private List<String> genres;
 }

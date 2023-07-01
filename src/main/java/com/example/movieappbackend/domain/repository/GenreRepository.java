@@ -10,5 +10,5 @@ import com.example.movieappbackend.domain.model.Genre;
 @Repository
 public interface GenreRepository extends JpaRepository<Genre, Long>{
 
-	List<Genre> findAllByIdIn(List<Long> ids);
+	List<Genre> findAllByNameIn(List<String> names);
 }

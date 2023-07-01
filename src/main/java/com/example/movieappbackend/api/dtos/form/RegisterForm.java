@@ -8,11 +8,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
@@ -32,8 +30,7 @@ public class RegisterForm {
 	
 	@Past
 	@NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-	@Schema(description = "format: dd/MM/yyyy")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate birthdate;
 	
 	private MultipartFile image;

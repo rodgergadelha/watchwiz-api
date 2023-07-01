@@ -44,8 +44,8 @@ public class GenreService {
 		return genres;
 	}
 	
-	public List<Genre> findAllByIdIn(List<Long> ids) {
-		return repository.findAllByIdIn(ids);
+	public List<Genre> findAllByNameIn(List<String> names) {
+		return repository.findAllByNameIn(names);
 	}
 	
 	@Transactional
