@@ -151,7 +151,7 @@ public class UserController {
 		return ResponseEntity.ok("Email updated successfully!");
 	}
 	
-	@GetMapping(value = "/my-account/profile-image", produces = MediaType.IMAGE_JPEG_VALUE)
+	@GetMapping(value = "/my-account/profile-image", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
 	public ResponseEntity<Resource> profileImage() {
 		Resource resource = service.getProfileImage();
 		return resource == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(resource);
