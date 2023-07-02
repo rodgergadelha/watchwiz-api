@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.movieappbackend.api.dtos.dto.UserDto;
@@ -50,7 +50,7 @@ public class UserService {
 	
 	private final VerificationTokenService verificationTokenService;
 	
-	private final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "\\src\\main\\resources\\images\\";
+	private final String UPLOAD_DIRECTORY = "file:src/main/resources/images/";
 	
 	@Value("${api.host}")
 	private String host;
@@ -196,7 +196,8 @@ public class UserService {
 	public void uploadProfileImage(String imageName, MultipartFile image) {
 		if(image != null && !image.isEmpty()) {
 			try {
-				Path path = Paths.get(UPLOAD_DIRECTORY, imageName);
+				Path path = ResourceUtils.getFile(UPLOAD_DIRECTORY + imageName)
+						.getAbsoluteFile().toPath();
 				Files.write(path, image.getBytes());
 			} catch (IOException e) {
 				throw new RuntimeException("Error at image uploading");
@@ -209,7 +210,8 @@ public class UserService {
 		String imageName = user.getUsername();
 		ByteArrayResource resource;
 		try {
-			Path path = Paths.get(UPLOAD_DIRECTORY, imageName);
+			Path path = ResourceUtils.getFile(UPLOAD_DIRECTORY + imageName)
+					.getAbsoluteFile().toPath();
 			resource = new ByteArrayResource(Files.readAllBytes(path));
 		} catch (NoSuchFileException e) {
 			return null;
