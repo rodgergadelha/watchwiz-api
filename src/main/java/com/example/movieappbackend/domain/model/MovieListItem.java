@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -34,7 +35,7 @@ public class MovieListItem implements Serializable {
 	
 	private int imdbRating;
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "movie_list_item_genre",
     joinColumns = @JoinColumn(name = "movie_list_item_imdb_id"),
     inverseJoinColumns = @JoinColumn(name = "genre_id"))
