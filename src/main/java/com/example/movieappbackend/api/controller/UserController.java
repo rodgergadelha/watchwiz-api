@@ -122,6 +122,16 @@ public class UserController {
 		return ResponseEntity.ok(userDto);
 	}
 	
+	@GetMapping("/my-account")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<UserDto> authenticatedUser() {
+		UserDto userDto = service.authenticatedUser();
+		return ResponseEntity.ok(userDto);
+	}
+	
 	@DeleteMapping("/my-account")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
@@ -156,4 +166,6 @@ public class UserController {
 		Resource resource = service.getProfileImage();
 		return resource == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(resource);
 	}
+	
+	
 }

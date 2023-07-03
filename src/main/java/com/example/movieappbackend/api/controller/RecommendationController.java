@@ -2,10 +2,9 @@ package com.example.movieappbackend.api.controller;
 
 import java.util.List;
 
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,9 +40,11 @@ public class RecommendationController {
 	public ResponseEntity<Page<MovieListItem>> getRecommendation (
 			@RequestParam("page") int page,
 			@RequestParam("size") int size){
-		Pageable pageable = PageRequest.of(page, size);
 		List<MovieListItem> movieList = recommendationService.executarRecomendacao();
-		Page<MovieListItem> moviesPages = new PageImpl(movieList, pageable, movieList.size());
-		return ResponseEntity.ok(moviesPages);
+		PagedListHolder<MovieListItem> moviesPage = new PagedListHolder<>(movieList);
+		moviesPage.setPage(page);
+		moviesPage.setPageSize(size);
+		Page<MovieListItem> pageImpl = new PageImpl<>(moviesPage.getPageList());
+		return ResponseEntity.ok(pageImpl);
 	}
 }

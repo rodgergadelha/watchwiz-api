@@ -55,6 +55,10 @@ public class UserService {
 	@Value("${api.host}")
 	private String host;
 	
+	public UserDto authenticatedUser() {
+		return mapper.entityToDto(getAuthenticatedUser());
+	}
+	
 	public List<UserDto> findAllUsers() {
 		return repository.findAll().stream().map(user -> mapper.entityToDto(user))
 				.collect(Collectors.toList());

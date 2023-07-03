@@ -2,10 +2,9 @@ package com.example.movieappbackend.api.controller;
 
 import java.util.List;
 
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,10 +46,12 @@ public class WatchedMovieController {
 	public ResponseEntity<Page<WatchedMovieDto>> watchedMovies(
 			@RequestParam("page") int page,
 			@RequestParam("size") int size) {
-		Pageable pageable = PageRequest.of(page, size);
 		List<WatchedMovieDto> movies = service.watchedMovies();
-		Page<WatchedMovieDto> moviesPages = new PageImpl<WatchedMovieDto>(movies, pageable, movies.size());
-		return moviesPages.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(moviesPages);
+		PagedListHolder<WatchedMovieDto> moviesPage = new PagedListHolder<>(movies);
+		moviesPage.setPage(page);
+		moviesPage.setPageSize(size);
+		Page<WatchedMovieDto> pageImpl = new PageImpl<>(moviesPage.getPageList());
+		return ResponseEntity.ok(pageImpl);
 	}
 	
 	@PostMapping
