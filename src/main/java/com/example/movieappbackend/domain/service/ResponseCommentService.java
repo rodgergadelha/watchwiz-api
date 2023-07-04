@@ -40,7 +40,11 @@ public class ResponseCommentService {
 	public Page<ResponseCommentDto> findAllByPostComment(String postCommentUuid, Pageable pageable) {
 		PostComment postComment = postCommentService.findByUuid(postCommentUuid);
 		return repository.findAllByPostComment(postComment, pageable)
-				.map((responseComment) -> mapper.entityToDto(responseComment));
+				.map((responseComment) -> {
+					ResponseCommentDto responseCommentDto = mapper.entityToDto(responseComment);
+					responseCommentDto.setUser(userMapper.entityToDto(responseComment.getUser()));
+					return responseCommentDto;
+				});
 	}
 	
 	public ResponseComment findByUuid(String uuid) {
@@ -52,7 +56,9 @@ public class ResponseCommentService {
 	
 	public ResponseCommentDto findResponseComnentDtoByUuid(String uuid) {
 		ResponseComment responseComment = findByUuid(uuid);
-		return mapper.entityToDto(responseComment);
+		ResponseCommentDto responseCommentDto = mapper.entityToDto(responseComment);
+		responseCommentDto.setUser(userMapper.entityToDto(responseComment.getUser()));
+		return responseCommentDto;
 	}
 	
 	@Transactional
@@ -63,7 +69,9 @@ public class ResponseCommentService {
 		responseComment.setPostComment(postComment);
 		responseComment.setUser(user);
 		responseComment = repository.save(responseComment);
-		return mapper.entityToDto(responseComment);
+		ResponseCommentDto responseCommentDto = mapper.entityToDto(responseComment);
+		responseCommentDto.setUser(userMapper.entityToDto(user));
+		return responseCommentDto;
 	}
 	
 	@Transactional
@@ -72,7 +80,9 @@ public class ResponseCommentService {
 		User user = responseComment.getUser();
 		userService.checkIfLogged(user);
 		responseComment.setText(text);
-		return mapper.entityToDto(responseComment);
+		ResponseCommentDto responseCommentDto = mapper.entityToDto(responseComment);
+		responseCommentDto.setUser(userMapper.entityToDto(user));
+		return responseCommentDto;
 	}
 	
 	@Transactional

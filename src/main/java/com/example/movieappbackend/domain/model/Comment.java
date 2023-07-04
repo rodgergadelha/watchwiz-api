@@ -32,7 +32,7 @@ public abstract class Comment {
     @Column(columnDefinition = "TEXT")
     private String text;
     
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
 	

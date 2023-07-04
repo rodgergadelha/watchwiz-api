@@ -21,7 +21,7 @@ public class ResponseComment extends Comment implements Serializable {
     
 	private static final long serialVersionUID = 1L;
     
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
     @JoinColumn(name = "id_post_comment")
     private PostComment postComment;
 	

@@ -9,6 +9,6 @@ public class ResponseCommentDto {
 
 	private String uuid;
 	private String text;
-	private String userUuid;
+	private UserDto user;
 	private String postCommentUuid;
 }

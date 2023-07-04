@@ -40,7 +40,11 @@ public class PostCommentService {
 	public Page<PostCommentDto> findAllByPost(String postUuid, Pageable pageable) {
 		Post post = postService.findByUuid(postUuid);
 		return repository.findAllByPost(post, pageable)
-				.map((postComment) -> mapper.entityToDto(postComment));
+				.map((postComment) -> {
+					PostCommentDto postCommentDto = mapper.entityToDto(postComment);
+					postCommentDto.setUser(userMapper.entityToDto(postComment.getUser()));
+					return postCommentDto;
+				});
 	}
 	
 	public PostComment findByUuid(String uuid) {
@@ -52,7 +56,9 @@ public class PostCommentService {
 	
 	public PostCommentDto findPostCommentDtoByUuid(String uuid) {
 		PostComment postComment = findByUuid(uuid);
-		return mapper.entityToDto(postComment);
+		PostCommentDto postCommentDto = mapper.entityToDto(postComment);
+		postCommentDto.setUser(userMapper.entityToDto(postComment.getUser()));
+		return postCommentDto;
 	}
 	
 	@Transactional
@@ -63,7 +69,9 @@ public class PostCommentService {
 		postComment.setPost(post);
 		postComment.setUser(user);
 		postComment = repository.save(postComment);
-		return mapper.entityToDto(postComment);
+		PostCommentDto postCommentDto = mapper.entityToDto(postComment);
+		postCommentDto.setUser(userMapper.entityToDto(user));
+		return postCommentDto;
 	}
 	
 	@Transactional
@@ -72,7 +80,9 @@ public class PostCommentService {
 		User user = postComment.getUser();
 		userService.checkIfLogged(user);
 		postComment.setText(text);
-		return mapper.entityToDto(postComment);
+		PostCommentDto postCommentDto = mapper.entityToDto(postComment);
+		postCommentDto.setUser(userMapper.entityToDto(user));
+		return postCommentDto;
 	}
 	
 	@Transactional

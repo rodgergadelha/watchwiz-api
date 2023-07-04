@@ -21,7 +21,9 @@ public class ResponseCommentMapper {
 	}
 	
 	public ResponseCommentDto entityToDto(ResponseComment responseComment) {
-		return modelMapper.map(responseComment, ResponseCommentDto.class);
+		ResponseCommentDto responseCommentDto = modelMapper.map(responseComment, ResponseCommentDto.class);
+		responseCommentDto.setPostCommentUuid(responseComment.getPostComment().getUuid());
+		return responseCommentDto;
 	}
 	
 	public void copyFormDataToEntity(ResponseCommentForm form, ResponseComment responseComment) {
