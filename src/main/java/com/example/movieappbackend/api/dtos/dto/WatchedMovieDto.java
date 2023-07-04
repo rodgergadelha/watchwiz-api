@@ -16,10 +16,13 @@ import lombok.Setter;
 public class WatchedMovieDto {
 
 	private String imdbId;
+	private String type;
 	private String title;
 	private String overview;
 	private String posterUrl;
 	private int imdbRating;
 	private int rate;
 	private List<Genre> genres;
+	private Integer runtime;
+	private Integer year;
 }

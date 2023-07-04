@@ -35,7 +35,14 @@ public class MovieDto {
 	@JsonInclude(Include.NON_NULL)
 	private Integer year;
 	
+	@JsonInclude(Include.NON_NULL)
+	private Integer firstAirYear;
+	
+	@JsonInclude(Include.NON_EMPTY)
 	private Map<String, Map<String, List<StreamingInfoDto>>> streamingInfo;
+	
+	@JsonInclude(Include.NON_EMPTY)
+	private List<SeasonDto> seasons;
 	
 	@JsonInclude(Include.NON_NULL)
 	private Integer seasonCount;
