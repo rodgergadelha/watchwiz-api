@@ -48,7 +48,7 @@ public class ResponseCommentController {
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public ResponseEntity<?> findAllResponseCommentsByPostComment(  @PathVariable String postCommentUuid,
+	public ResponseEntity<Page<ResponseCommentDto>> findAllResponseCommentsByPostComment(  @PathVariable String postCommentUuid,
 																	@RequestParam("page") int page,
 																	@RequestParam("size") int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
