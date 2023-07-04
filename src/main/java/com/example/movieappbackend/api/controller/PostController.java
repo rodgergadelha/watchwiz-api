@@ -50,7 +50,8 @@ public class PostController {
 		return ResponseEntity.ok(postDtos);
 	}
 	
-	@GetMapping("/{username}/posts")
+	
+	@GetMapping("/users/{username}/posts")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "username", paramType = "path", dataType = "String",
 				   required = true),

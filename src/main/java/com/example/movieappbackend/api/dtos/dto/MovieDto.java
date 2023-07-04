@@ -3,6 +3,9 @@ package com.example.movieappbackend.api.dtos.dto;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,11 +13,33 @@ import lombok.Setter;
 @Getter
 public class MovieDto {
 	
+	private String type;
+	
 	private String title;
+	
 	private String overview;
+	
 	private String imdbId;
+	
 	private int imdbRating;
+	
 	private List<String> cast;
+	
 	private List<Map<String, Object>> genres;
+	
 	private Map<String, String> posterUrls;
+	
+	@JsonInclude(Include.NON_NULL)
+	private Integer runtime;
+	
+	@JsonInclude(Include.NON_NULL)
+	private Integer year;
+	
+	private Map<String, Map<String, List<StreamingInfoDto>>> streamingInfo;
+	
+	@JsonInclude(Include.NON_NULL)
+	private Integer seasonCount;
+	
+	@JsonInclude(Include.NON_NULL)
+	private Integer episodeCount;
 }

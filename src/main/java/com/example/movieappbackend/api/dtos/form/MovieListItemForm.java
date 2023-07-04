@@ -15,6 +15,9 @@ public class MovieListItemForm {
 	private String imdbId;
 	
 	@NotBlank
+	private String type;
+	
+	@NotBlank
 	private String title;
 	
 	@NotBlank
@@ -26,4 +29,8 @@ public class MovieListItemForm {
 	private int imdbRating;
 	
 	private List<String> genres;
+	
+	private Integer runtime;
+	
+	private Integer year;
 }

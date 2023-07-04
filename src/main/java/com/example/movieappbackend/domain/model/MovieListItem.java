@@ -26,6 +26,8 @@ public class MovieListItem implements Serializable {
     @Id
 	private String imdbId;
 	
+	private String type;
+	
 	private String title;
 	
 	@Column(columnDefinition = "TEXT")
@@ -34,6 +36,10 @@ public class MovieListItem implements Serializable {
 	private String posterUrl;
 	
 	private int imdbRating;
+	
+	private Integer runtime;
+	
+	private Integer year;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "movie_list_item_genre",
