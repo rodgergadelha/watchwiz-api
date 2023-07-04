@@ -39,7 +39,15 @@ public class PostService {
 	private final UserMapper userMapper;
 	
 	public Page<PostDto> findAllPosts(Pageable pageable) {
-		return repository.findAll(pageable).map(post -> mapper.entityToDto(post));
+		User loggedInUser = userService.getAuthenticatedUser();
+		Page<Post> posts = repository.findAll(pageable);
+		Page<PostDto> postsDtos = posts.map(post -> {
+			boolean authenticatedUserLiked = post.getUsersThatLiked().contains(loggedInUser);
+			PostDto postDto = mapper.entityToDto(post);
+			postDto.setAuthenticatedUserLiked(authenticatedUserLiked);
+			return postDto;
+		});
+		return postsDtos;
 	}
 	
 	@Transactional
@@ -104,8 +112,14 @@ public class PostService {
 	}
 	
 	public Page<PostDto> findAllByUserFollowing(Pageable pageable) {
-		User user = userService.getAuthenticatedUser();
-		return repository.findAllByUserFollowing(user.getFollowing(), pageable)
-				.map(post -> mapper.entityToDto(post));
+		User loggedInUser = userService.getAuthenticatedUser();
+		Page<Post> posts = repository.findAllByUserFollowing(loggedInUser.getFollowing(), pageable);
+		Page<PostDto> postsDtos = posts.map(post -> {
+			boolean authenticatedUserLiked = post.getUsersThatLiked().contains(loggedInUser);
+			PostDto postDto = mapper.entityToDto(post);
+			postDto.setAuthenticatedUserLiked(authenticatedUserLiked);
+			return postDto;
+		});
+		return postsDtos;
 	}
 }

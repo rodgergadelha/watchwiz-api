@@ -4,8 +4,10 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,6 +39,7 @@ public class SearchController {
 	private final MovieMapper mapper;
 	
 	@GetMapping("/basic")
+	@SuppressWarnings("unchecked")
 	@ApiImplicitParams({
 		   @ApiImplicitParam(name = "country", paramType = "query", dataType = "String",
 				   required = true, value = ApiDocumentationUtils.COUNTRY_PARAM_DESCRIPTION),
@@ -62,10 +65,16 @@ public class SearchController {
 		   @ApiImplicitParam(name = "keyword", paramType = "query", dataType = "String",
 				   value = ApiDocumentationUtils.KEYWORD_LANGUAGE_PARAM_DESCRIPTION),
 		   
+		   @ApiImplicitParam(name = "page", paramType = "query", dataType = "integer",
+		   required = true, value = "number of the page"),
+
+		   @ApiImplicitParam(name = "size", paramType = "query", dataType = "integer",
+		   required = true, value = "size of a page"),
+		   
 		   @ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public List<MovieDto> searchBasic(
+	public ResponseEntity<Page<MovieDto>> searchBasic(
 			@RequestParam("country") String country,
 			@RequestParam("services") String services,
 			@RequestParam(value = "show_type", required = false) String showType,
@@ -73,7 +82,9 @@ public class SearchController {
 			@RequestParam(value = "genre", required = false) String genre,
 			@RequestParam(value = "show_original_language", required = false) String showOriginalLanguage,
 			@RequestParam(value = "cursor", required = false) String cursor,
-			@RequestParam(value = "keyword", required = false) String keyword) throws ParseException {
+			@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam("page") int page,
+			@RequestParam("size") int size) throws ParseException {
 		
 		String url = String.format("%s/search/basic", XRapidAPIUtils.getBaseURL());
 		HttpHeaders headers = XRapidAPIUtils.getBasicHttpHeaders();
@@ -102,10 +113,17 @@ public class SearchController {
 		Map<String, Object> responseBody = JSONObjectUtils.parse((String) response.getBody());
 		List<Object> result = (List<Object>) responseBody.get("result");
 		
-		return result.stream().map(movie -> mapper.dto(movie)).collect(Collectors.toList());
+		PagedListHolder<Object> resultPage = new PagedListHolder<>(result);
+		resultPage.setPage(page);
+		resultPage.setPageSize(size);
+		Page<Object> pageImpl = new PageImpl<>(resultPage.getPageList());
+		
+		return ResponseEntity.ok(pageImpl.map(movie -> mapper.dto(movie)));
 	}
 	
+	
 	@GetMapping("/title")
+	@SuppressWarnings("unchecked")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "title", paramType = "query", dataType = "String",
 				   required = true, value = "Title of movie"),
@@ -119,14 +137,22 @@ public class SearchController {
 		@ApiImplicitParam(name = "output_language", paramType = "query", dataType = "String",
 				   value = ApiDocumentationUtils.OUTPUT_LANGUAGE_PARAM_DESCRIPTION),
 		
+		@ApiImplicitParam(name = "page", paramType = "query", dataType = "integer",
+		   required = true, value = "number of the page"),
+
+		@ApiImplicitParam(name = "size", paramType = "query", dataType = "integer",
+		required = true, value = "size of a page"),
+		
 		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
 		   required = true, value = "access token")
 	})
-	public Object searchByTitle(
+	public ResponseEntity<Page<Object>> searchByTitle(
 			@RequestParam("title") String title,
 			@RequestParam("country") String country,
 			@RequestParam(value = "show_type", required = false) String showType,
-			@RequestParam(value = "output_language", required = false) String outputLanguage) throws ParseException {
+			@RequestParam(value = "output_language", required = false) String outputLanguage,
+			@RequestParam("page") int page,
+			@RequestParam("size") int size) throws ParseException {
 		
 		String url = String.format("%s/search/title", XRapidAPIUtils.getBaseURL());
 		HttpHeaders headers = XRapidAPIUtils.getBasicHttpHeaders();
@@ -147,9 +173,15 @@ public class SearchController {
 		ResponseEntity<?> response = this.restTemplate.exchange(urlTemplate, HttpMethod.GET,
 				entity, String.class, params);
 		Map<String, Object> responseBody = JSONObjectUtils.parse((String) response.getBody());
+		
 		List<Object> result = (List<Object>) responseBody.get("result");
 		
-		return result.stream().map(movie -> mapper.dto(movie)).collect(Collectors.toList());
+		PagedListHolder<Object> resultPage = new PagedListHolder<>(result);
+		resultPage.setPage(page);
+		resultPage.setPageSize(size);
+		Page<Object> pageImpl = new PageImpl<>(resultPage.getPageList());
+		
+		return ResponseEntity.ok(pageImpl.map(movie -> mapper.dto(movie)));
 	}
 	
 }

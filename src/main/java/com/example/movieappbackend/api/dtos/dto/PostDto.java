@@ -16,4 +16,5 @@ public class PostDto {
     private float movieRate;
     private String moviePosterUrl;
 	private String creationDate;
+	private Boolean authenticatedUserLiked;
 }
