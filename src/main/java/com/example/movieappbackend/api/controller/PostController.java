@@ -50,6 +50,18 @@ public class PostController {
 		return ResponseEntity.ok(postDtos);
 	}
 	
+	@GetMapping("/posts/{uuid}")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "uuid", paramType = "path", dataType = "string",
+				value = "UUID of post", required = true),
+		
+		@ApiImplicitParam(name = "Authorization", paramType = "header", dataType = "string",
+		   required = true, value = "access token")
+	})
+	public ResponseEntity<PostDto> findByUuid(@PathVariable String uuid) {
+		return ResponseEntity.ok(service.findPostDtoByUuid(uuid));
+	}
+	
 	
 	@GetMapping("/users/{username}/posts")
 	@ApiImplicitParams({

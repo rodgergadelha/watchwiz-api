@@ -50,6 +50,15 @@ public class PostService {
 		return postsDtos;
 	}
 	
+	public PostDto findPostDtoByUuid(String uuid) {
+		Post post = findByUuid(uuid);
+		User loggedInUser = userService.getAuthenticatedUser();
+		boolean authenticatedUserLiked = post.getUsersThatLiked().contains(loggedInUser);
+		PostDto postDto = mapper.entityToDto(post);
+		postDto.setAuthenticatedUserLiked(authenticatedUserLiked);
+		return postDto;
+	}
+	
 	@Transactional
 	public PostDto save(PostForm form) {
 		Post post = mapper.formToEntity(form);
