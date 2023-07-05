@@ -27,7 +27,7 @@ public class MovieDto {
 	
 	private List<Map<String, Object>> genres;
 	
-	private Map<String, String> posterUrls;
+	private Map<String, String> posterURLs;
 	
 	@JsonInclude(Include.NON_NULL)
 	private Integer runtime;
