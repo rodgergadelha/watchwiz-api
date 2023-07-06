@@ -14,7 +14,7 @@ public class XRapidAPIUtils {
 	protected static HttpHeaders getBasicHttpHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		headers.set("X-RapidAPI-Key", "2d51fa8debmsheed8f46be152fc2p18fdb9jsn7577ff73281f");
+		headers.set("X-RapidAPI-Key", "db9e1c8595mshd6da4d78cf7db36p1413e4jsn7943972c7201");
 		headers.set("X-RapidAPI-Host", "streaming-availability.p.rapidapi.com");
 		return headers;
 	}
