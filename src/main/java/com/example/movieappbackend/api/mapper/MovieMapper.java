@@ -21,7 +21,7 @@ public class MovieMapper {
 	
 	public MovieListItem movieListItem(MovieDto movieDto) {
 		MovieListItem movieListItem = modelMapper.map(movieDto, MovieListItem.class);
-		movieListItem.setPosterUrl(movieDto.getPosterUrls().get("original"));
+		movieListItem.setPosterUrl(movieDto.getPosterURLs().get("original"));
 		return movieListItem;
 	}
 	

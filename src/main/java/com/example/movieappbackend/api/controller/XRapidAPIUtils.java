@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 
 public class XRapidAPIUtils {
 	
+	private static String xrapidApiKey = System.getenv("XRAPID_API_KEY");
+	
 	protected static String getBaseURL() {
 		return "https://streaming-availability.p.rapidapi.com/v2";
 	}
@@ -14,7 +16,7 @@ public class XRapidAPIUtils {
 	protected static HttpHeaders getBasicHttpHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		headers.set("X-RapidAPI-Key", "db9e1c8595mshd6da4d78cf7db36p1413e4jsn7943972c7201");
+		headers.set("X-RapidAPI-Key", xrapidApiKey);
 		headers.set("X-RapidAPI-Host", "streaming-availability.p.rapidapi.com");
 		return headers;
 	}
