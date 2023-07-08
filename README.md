@@ -2,14 +2,14 @@
 API de usada pelo aplicativo WatchWiz. Essa API foi um projeto
 desenvolvido para fins de aprendizado.
 
-<h1>Tecnologias</h1>
+<h2>Tecnologias</h2>
 - Linguagem de programação: Java 17;
 - Framework: Spring Boot v2.7;
 - Sistema de gerenciamento de banco de dados: PostgreSQL;
 - Fonte dos dados de filmes: Movie of the Night API;
 - Documentação da API: Swagger.
 
-<h1>Funcionalidades</h1>
+<h2>Funcionalidades</h2>
 - Pesquisar por filmes/séries pelo título;
 - Obter dados de um filme/série pelo imdb_id;
 - Salvar lista de filmes/séries assistidos e dar uma nota para eles;
