@@ -1,5 +1,5 @@
 # WatchWiz API
-API de usada pelo aplicativo WatchWiz. Essa API foi um projeto
+API usada pelo aplicativo WatchWiz. Essa API foi um projeto
 desenvolvido para fins de aprendizado.
 
 <h2>Tecnologias</h2>
